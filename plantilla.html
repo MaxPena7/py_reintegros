@@ -7,7 +7,7 @@
 
 @page {
     size: letter;
-    margin-top: 5.5cm;
+    margin-top:10.5cm;
     margin-right: 1.5cm;
     margin-bottom: 1.5cm;
     margin-left: 1.5cm;
@@ -22,6 +22,7 @@ body {
     background-position: center top;
     background-size: cover;
     background-color: transparent;
+    margin-top: 5cm;
 
     /* Ajuste de impresión */
     print-color-adjust: exact;          /* estándar moderno */
@@ -38,6 +39,11 @@ h3 {
     text-align: center;
     font-weight: bold;
     font-size: 16px;
+    margin-bottom: 20px;
+}
+.finish {
+    text-align: center;
+    margin-top: 60px;
     margin-bottom: 20px;
 }
 .fecha-derecha {
@@ -164,7 +170,8 @@ tfoot td {
 </td>
 </tr>
 <tr>
-<td colspan="4"><span class="info-cell-label">NIVEL EDUCATIVO:</span> {{ nivel_educativo }}</td>
+<td colspan="2"><span class="info-cell-label">NIVEL EDUCATIVO:</span> {{ nivel_educativo }}</td>
+<td colspan="2" style="background-color: #f0f0f0; font-weight: bold;"><span class="info-cell-label">TOTAL A REINTEGRAR: </span> {{ total_a_reintegrar }}</td>
 </tr>
 </table>
 
@@ -238,10 +245,18 @@ tfoot td {
 </tr>
 </tfoot>
 </table>
-
 <!-- TOTAL LÍQUIDO -->
 <div class="total-liquido">
  TOTAL LÍQUIDO: ${{ "{:,.2f}".format(total_liquido) }}
 </div>
+
+</div>
+
+<div class="finish">
+    <div style="border-bottom: 1px solid black; width: 60%; margin: 140px auto 10px auto; height: 1px;"></div>
+    <h3>LICDA. MYRIAN ELIZABETH SEGURA AGUILERA</h3>
+    <h3>SUBJEFA DE NÓMINA</h3>
+</div>
+
 </body>
 </html>

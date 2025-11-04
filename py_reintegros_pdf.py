@@ -10,9 +10,9 @@ import PyPDF2
 
 # --- 1. CONFIGURACIÓN DE ARCHIVOS Y RUTA ---
 ARCHIVO_PLANTILLA_HTML = "plantilla.html"
-ARCHIVO_ANEXO_V = r"C:\Users\Maxruso7\Desktop\ANEXOS\R06_202518_O1_AnexoV.xlsx"
-ARCHIVO_ANEXO_VI = r"C:\Users\Maxruso7\Desktop\ANEXOS\R06_202518_O1_AnexoVI.xlsx"
-CARPETA_SALIDA = r"C:\Users\Maxruso7\Desktop\py_reintegros"
+ARCHIVO_ANEXO_V = r"C:\Users\NominaAdmin\Desktop\ANEXOS\ANEXOS V Y VI\ANEXOS V Y VI 2025\202516\R06_202516_O1_AnexoV.xlsx"
+ARCHIVO_ANEXO_VI = r"C:\Users\NominaAdmin\Desktop\ANEXOS\ANEXOS V Y VI\ANEXOS V Y VI 2025\202516\R06_202516_O1_AnexoVI.xlsx"
+CARPETA_SALIDA = r"C:\Users\NominaAdmin\Desktop\reintegros_prueba"
 
 # Configurar la ruta de wkhtmltopdf
 RUTA_WKHTMLTOPDF = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
@@ -23,11 +23,15 @@ options = {
     'encoding': "UTF-8",
     'no-outline': None,
     'enable-local-file-access': None,
+    'margin-top': '35mm',   # antes ~5mm por defecto, ahora 55mm = 5.5 cm
+    'margin-right': '15mm',
+    'margin-bottom': '15mm',
+    'margin-left': '15mm',
 }
 
 # --- 2. DATOS DE ENTRADA ---
 print("--- Configuracion de Busqueda ---")
-INPUT_RFC = "EASM911113LG1"
+INPUT_RFC = "BISA841115H59"
 print(f"Buscando todos los reintegros para el RFC: {INPUT_RFC}\n")
 
 DATOS_MANUALES = {
