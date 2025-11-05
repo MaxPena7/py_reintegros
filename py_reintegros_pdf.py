@@ -3,10 +3,10 @@ import os
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 import pdfkit
-import locale
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import PyPDF2
+
 
 # --- 1. CONFIGURACIÓN DE ARCHIVOS Y RUTA ---
 ARCHIVO_PLANTILLA_HTML = "plantilla.html"
@@ -28,6 +28,23 @@ options = {
     'margin-bottom': '15mm',
     'margin-left': '15mm',
 }
+# DEFINICION DEL TIPO DE REINTEGRO
+def solicitar_tipo_reintegro():
+    while True:
+        tipo = input("Ingrese tipo de reintegro (TOTAL/PARCIAL): ").upper()
+        if tipo in ['TOTAL', 'PARCIAL']:
+            if tipo == 'PARCIAL':
+                while True:
+                    try:
+                        dias = int(input("Ingresa el número de días a reintegrar (1-15): "))
+                        if 1 <= dias <= 15:
+                            return tipo, dias
+                        print("Error: El número de días debe estar entre 1 y 15.")
+                    except ValueError:
+                        print("Error: Por favor ingresa un número válido.")
+            return tipo, 15  # Por defecto, reintegro TOTAL de 15 días
+        print("Tipo de reintegro no válido. Intente de nuevo.")
+
 
 # --- 2. DATOS DE ENTRADA ---
 print("--- Configuracion de Busqueda ---")
@@ -121,6 +138,10 @@ def convertir_html_a_pdf(html_string, ruta_pdf_salida):
 def generar_reintegros_pdf():
     print("Iniciando 'py_reintegros' (Modo PDF con capas)...")
     
+#Solicitar el tipo de reintegro
+    tipo_reintegro, dias_reintegro = solicitar_tipo_reintegro()
+    print(f"\nProcesando reintegro {tipo_reintegro} con {dias_reintegro} díaas...")
+
     # Crear carpeta de salida si no existe
     if not os.path.exists(CARPETA_SALIDA):
         try:
@@ -177,18 +198,18 @@ def generar_reintegros_pdf():
 
     print(f"\nCoincidencia encontrada! Se procesaran {len(oficios_encontrados)} oficio(s) para este RFC.")
 
-    try:
-        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-    except:
-        try:
-            locale.setlocale(locale.LC_TIME, 'es_MX.UTF-8')
-        except:
-            try:
-                locale.setlocale(locale.LC_TIME, 'Spanish_Spain')
-            except:
-                locale.setlocale(locale.LC_TIME, '')
-
-    fecha_hoy_str = datetime.now().strftime("%A, %d de %B de %Y").capitalize()
+# Configurar fecha actual en formato deseado, (POR PROBLEMAS CON LOCALE PARA LOS ACENTOS)
+    dias_semana = {
+        0: "lunes", 1: "martes", 2: "miércoles",
+        3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"
+    }
+    meses_nombre = {
+        1: "enero", 2: "febrero", 3: "marzo", 4: "abril",
+        5: "mayo", 6: "junio", 7: "julio", 8: "agosto",
+        9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
+    }
+    ahora = datetime.now()
+    fecha_hoy_str = f"{dias_semana[ahora.weekday()].capitalize()}, {ahora.day:02d} de {meses_nombre[ahora.month]} de {ahora.year}"
     print(f"[DEBUG] Fecha configurada: {fecha_hoy_str}")
 
     # Iterar sobre CADA resultado encontrado para ese RFC
@@ -209,11 +230,19 @@ def generar_reintegros_pdf():
         # Separar DataFrames para calcular totales
         percepciones_df = detalles[detalles['TIPO_CONCEPTO'] == 'P']
         deducciones_df = detalles[detalles['TIPO_CONCEPTO'] == 'D']
-        
+
         # Calcular Totales
         total_percepciones = percepciones_df['IMPORTE'].sum()
         total_deducciones = deducciones_df['IMPORTE'].sum()
         total_liquido = total_percepciones - total_deducciones
+
+        # Calcular total_a_reintegrar basado en el tipo
+        total_liquido = round(total_percepciones - total_deducciones, 2)
+        if tipo_reintegro == 'TOTAL':
+            total_a_reintegrar = total_liquido
+        else:
+            # Cálculo proporcional para reintegro parcial
+            total_a_reintegrar = round((total_liquido / 15) * dias_reintegro, 2)
 
         # Convertir a diccionarios para Jinja
         percepciones_list = percepciones_df.to_dict('records')
@@ -228,24 +257,26 @@ def generar_reintegros_pdf():
 
         # Este diccionario tiene TODA la información que la plantilla HTML necesita
         contexto_datos = {
-            "fecha_hoy": fecha_hoy_str,
-            "nombre_completo": nombre_completo.strip(),
-            "no_comprobante": no_comprobante,
-            "qna": qna,
+            "nombre_completo": nombre_completo,
             "rfc": rfc,
+            "no_comprobante": no_comprobante,
             "clave_cobro": fila_v.get('CLAVE_PLAZA', ''),
             "cct": fila_v.get('CCT', ''),
-            "motivo_reintegro": DATOS_MANUALES["MOTIVO_REINTEGRO"],
             "campo_abajo_motivo": DATOS_MANUALES["CAMPO_ABAJO_MOTIVO"],
             "desde": fila_v.get('FECHA_INICIO', ''),
             "hasta": fila_v.get('FECHA_TERMINO', ''),
-            "nivel_educativo": DATOS_MANUALES["NIVEL_EDUCATIVO"],
-            "observaciones": observaciones,
+            "qna": qna,
+            "fecha_hoy": fecha_hoy_str,
             "percepciones": percepciones_list,
             "deducciones": deducciones_list,
-            "total_percepciones": total_percepciones,
-            "total_deducciones": total_deducciones,
-            "total_liquido": total_liquido
+            "total_percepciones": round(total_percepciones, 2),
+            "total_deducciones": round(total_deducciones, 2),
+            "total_liquido": total_liquido,
+            "total_a_reintegrar": total_a_reintegrar,
+            "motivo_reintegro": f"{tipo_reintegro}",
+            "nivel_educativo": DATOS_MANUALES["NIVEL_EDUCATIVO"],
+            # Agregar días si es parcial
+            "observaciones": f"Reintegro de {dias_reintegro} días" if tipo_reintegro == 'PARCIAL' else ""
         }
 
         # --- B. Renderizar el HTML ---

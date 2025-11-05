@@ -171,7 +171,9 @@ tfoot td {
 </tr>
 <tr>
 <td colspan="2"><span class="info-cell-label">NIVEL EDUCATIVO:</span> {{ nivel_educativo }}</td>
-<td colspan="2" style="background-color: #f0f0f0; font-weight: bold;"><span class="info-cell-label">TOTAL A REINTEGRAR: </span> {{ total_a_reintegrar }}</td>
+<td colspan="2" style="background-color: #f0f0f0; font-weight: bold;">
+  <span class="info-cell-label">TOTAL A REINTEGRAR: </span> ${{ "{:,.2f}".format(total_a_reintegrar) }}
+</td>
 </tr>
 </table>
 
