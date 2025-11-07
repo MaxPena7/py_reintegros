@@ -23,7 +23,7 @@ options = {
     'margin-left': '15mm',
 }
 
-# --- 2. FUNCIONES AUXILIARES (Sin cambios) ---
+# --- 2. FUNCIONES AUXILIARES ---
 
 def obtener_pdf_fondo():
     if os.path.exists(PDF_FONDO):
@@ -76,7 +76,46 @@ def convertir_html_a_pdf(html_string, ruta_pdf_salida):
 def truncar_a_2_decimales(valor):
     return math.trunc(float(valor) * 100) / 100.0
 
-# --- 3. FUNCIÓN PRINCIPAL DEL MOTOR ---
+# --- 3. FUNCIÓN: OBTENER PLAZAS POR RFC ---
+
+def obtener_plazas_por_rfc(rfc_input, rutas_anexo_v):
+    """
+    Obtiene las plazas (NO_COMPROBANTE) disponibles para un RFC específico.
+    rutas_anexo_v: puede ser una ruta (str) o una lista de rutas (list)
+    Retorna una lista de diccionarios con información de cada plaza.
+    """
+    # Convertir a lista si es una sola ruta
+    if isinstance(rutas_anexo_v, str):
+        rutas_anexo_v = [rutas_anexo_v]
+    
+    plazas = []
+    
+    try:
+        for ruta in rutas_anexo_v:
+            df_anexo_v = pd.read_excel(ruta, dtype=str)
+            
+            # Filtrar por RFC
+            filtro = (df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip())
+            oficios = df_anexo_v[filtro]
+            
+            if not oficios.empty:
+                for idx, fila in oficios.iterrows():
+                    plaza_info = {
+                        'NO_COMPROBANTE': fila.get('NO_COMPROBANTE', ''),
+                        'CLAVE_PLAZA': fila.get('CLAVE_PLAZA', ''),
+                        'PERIODO': fila.get('PERIODO', ''),
+                        'nombre_completo': f"{fila.get('PRIMER_APELLIDO', '')} {fila.get('SEGUNDO_APELLIDO', '')} {fila.get('NOMBRE(S)', '')}".strip()
+                    }
+                    plazas.append(plaza_info)
+    except Exception as e:
+        return False, f"Error al leer los Anexos V: {e}", []
+    
+    if not plazas:
+        return False, f"No se encontró ningún RFC que coincida con: {rfc_input}", []
+    
+    return True, "Plazas encontradas", plazas
+
+# --- 4. FUNCIÓN PRINCIPAL DEL MOTOR ---
 
 def generar_reintegros_pdf(
         rfc_input, 
@@ -85,31 +124,48 @@ def generar_reintegros_pdf(
         ruta_anexo_v,
         ruta_anexo_vi,
         ruta_carpeta_salida,
-        progress_callback=None  # <-- AGREGADO
+        no_comprobantes_seleccionados=None,
+        progress_callback=None
     ):
     """
     Motor principal.
+    ruta_anexo_v: puede ser str o lista de str
+    ruta_anexo_vi: puede ser str o lista de str
+    no_comprobantes_seleccionados: lista de comprobantes a procesar. Si es None, procesa todos.
     progress_callback: función que recibe (actual, total) para reportar progreso
     """
     
+    # Convertir a listas si son strings
+    if isinstance(ruta_anexo_v, str):
+        ruta_anexo_v = [ruta_anexo_v]
+    if isinstance(ruta_anexo_vi, str):
+        ruta_anexo_vi = [ruta_anexo_vi]
+    
     print("Iniciando 'py_reintegros' (Modo PDF con capas)...")
 
-    # --- Validar rutas (sin cambios) ---
-    if not os.path.exists(ruta_anexo_v):
-        return False, f"Error: No se encontró el Anexo V en:\n{ruta_anexo_v}"
-    if not os.path.exists(ruta_anexo_vi):
-        return False, f"Error: No se encontró el Anexo VI en:\n{ruta_anexo_vi}"
+    # --- Validar rutas ---
+    for ruta in ruta_anexo_v:
+        if not os.path.exists(ruta):
+            return False, f"Error: No se encontró el Anexo V en:\n{ruta}"
+    for ruta in ruta_anexo_vi:
+        if not os.path.exists(ruta):
+            return False, f"Error: No se encontró el Anexo VI en:\n{ruta}"
+    
     if not os.path.exists(ruta_carpeta_salida):
         try:
             os.makedirs(ruta_carpeta_salida)
         except Exception as e:
             return False, f"Error: No se pudo crear la carpeta de salida:\n{e}"
 
-    # --- Cargar Anexos (sin cambios) ---
+    # --- Cargar Anexos (múltiples) ---
     print("Cargando Anexos (esto puede tardar)...")
     try:
-        df_anexo_v = pd.read_excel(ruta_anexo_v, dtype=str)
-        df_anexo_vi = pd.read_excel(ruta_anexo_vi, dtype=str)
+        df_anexo_v_list = [pd.read_excel(ruta, dtype=str) for ruta in ruta_anexo_v]
+        df_anexo_v = pd.concat(df_anexo_v_list, ignore_index=True)
+        
+        df_anexo_vi_list = [pd.read_excel(ruta, dtype=str) for ruta in ruta_anexo_vi]
+        df_anexo_vi = pd.concat(df_anexo_vi_list, ignore_index=True)
+        
         df_anexo_vi['IMPORTE'] = pd.to_numeric(df_anexo_vi['IMPORTE'], errors='coerce').fillna(0.0)
     except Exception as e:
         msg = f"ERROR al leer los archivos Excel: {e}"
@@ -117,14 +173,14 @@ def generar_reintegros_pdf(
         return False, msg
     print("Anexos cargados.")
 
-    # --- Obtener PDF de fondo (sin cambios) ---
+    # --- Obtener PDF de fondo ---
     pdf_fondo = obtener_pdf_fondo()
     if not pdf_fondo:
         msg = "ERROR: No se encontró 'fondo_reintegro.pdf'."
         print(msg)
         return False, msg
 
-    # --- Configurar Jinja2 (sin cambios) ---
+    # --- Configurar Jinja2 ---
     try:
         script_dir = os.path.dirname(__file__)
         env = Environment(loader=FileSystemLoader(script_dir if script_dir else '.'))
@@ -134,7 +190,7 @@ def generar_reintegros_pdf(
         print(msg)
         return False, msg
 
-    # --- Filtrar Anexo V por RFC (sin cambios) ---
+    # --- Filtrar Anexo V por RFC ---
     filtro = (df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip())
     oficios_encontrados = df_anexo_v[filtro]
 
@@ -142,6 +198,16 @@ def generar_reintegros_pdf(
         msg = f"--- ERROR: No se encontró ningún registro que coincida con el RFC: {rfc_input} ---"
         print(msg)
         return False, msg
+
+    # --- Filtrar solo los comprobantes seleccionados ---
+    if no_comprobantes_seleccionados:
+        oficios_encontrados = oficios_encontrados[
+            oficios_encontrados['NO_COMPROBANTE'].isin(no_comprobantes_seleccionados)
+        ]
+        if oficios_encontrados.empty:
+            msg = "ERROR: Ninguno de los comprobantes seleccionados fueron encontrados."
+            print(msg)
+            return False, msg
 
     print(f"¡Coincidencia encontrada! Se procesarán {len(oficios_encontrados)} oficio(s) para este RFC.")
     
@@ -158,10 +224,10 @@ def generar_reintegros_pdf(
     fecha_hoy_str = f"{dias_semana[ahora.weekday()].capitalize()}, {ahora.day:02d} de {meses_nombre[ahora.month]} de {ahora.year}"
 
     mensajes_exito = []
-    total_oficios = len(oficios_encontrados)  # <-- AGREGADO
+    total_oficios = len(oficios_encontrados)
 
     # --- Iterar sobre CADA oficio encontrado ---
-    for idx, (index, fila_v) in enumerate(oficios_encontrados.iterrows(), start=1):  # <-- MODIFICADO
+    for idx, (index, fila_v) in enumerate(oficios_encontrados.iterrows(), start=1):
         
         no_comprobante = fila_v.get('NO_COMPROBANTE', 'S/C')
         rfc = fila_v.get('RFC', 'S/RFC')
@@ -176,28 +242,38 @@ def generar_reintegros_pdf(
         total_liquido = total_percepciones - total_deducciones
         total_liquido = truncar_a_2_decimales(total_liquido)
         total_a_reintegrar = 0.0
+        
         if config_reintegro['tipo'] == 'TOTAL':
             total_a_reintegrar = total_liquido
         else:
             if config_reintegro['modo'] == 'DIAS':
                 total_a_reintegrar = truncar_a_2_decimales((total_liquido / 15.0) * float(config_reintegro['dias']))
             else:
-                concepto_buscar = str(config_reintegro.get('concepto', '')).strip()
-                if not concepto_buscar:
+                # MODO CONCEPTO - MÚLTIPLES CONCEPTOS
+                conceptos_str = str(config_reintegro.get('concepto', '')).strip()
+                if not conceptos_str:
+                    total_a_reintegrar = 0.0
+                else:
+                    # Separar conceptos por coma y limpiar espacios
+                    conceptos_lista = [c.strip() for c in conceptos_str.split(',') if c.strip()]
                     total_concepto = 0.0
-                else:
-                    s = percepciones_df['COD_CONCEPTO'].astype(str).str.strip()
-                    concepto_df = percepciones_df[s == concepto_buscar]
-                    if concepto_df.empty:
-                        concepto_df = percepciones_df[s.str.lstrip('0') == concepto_buscar.lstrip('0')]
-                    if concepto_df.empty:
-                        total_concepto = 0.0
+                    
+                    for concepto_buscar in conceptos_lista:
+                        # Buscar el concepto en percepciones
+                        s = percepciones_df['COD_CONCEPTO'].astype(str).str.strip()
+                        concepto_df = percepciones_df[s == concepto_buscar]
+                        if concepto_df.empty:
+                            concepto_df = percepciones_df[s.str.lstrip('0') == concepto_buscar.lstrip('0')]
+                        
+                        if not concepto_df.empty:
+                            importe_concepto = concepto_df['IMPORTE'].astype(float).sum()
+                            total_concepto += importe_concepto
+                    
+                    if config_reintegro.get('por_dias'):
+                        total_a_reintegrar = truncar_a_2_decimales((total_concepto / 15.0) * float(config_reintegro['dias']))
                     else:
-                        total_concepto = concepto_df['IMPORTE'].astype(float).sum()
-                if config_reintegro.get('por_dias'):
-                    total_a_reintegrar = truncar_a_2_decimales((total_concepto / 15.0) * float(config_reintegro['dias']))
-                else:
-                    total_a_reintegrar = truncar_a_2_decimales(total_concepto)
+                        total_a_reintegrar = truncar_a_2_decimales(total_concepto)
+        
         contexto_datos = {
             "nombre_completo": nombre_completo, "rfc": rfc, "no_comprobante": no_comprobante,
             "clave_cobro": fila_v.get('CLAVE_PLAZA', ''), "cct": fila_v.get('CCT', ''),
@@ -228,7 +304,7 @@ def generar_reintegros_pdf(
             return False, mensaje_superponer
         mensajes_exito.append(f"Éxito: {nombre_archivo_final}")
 
-        # <-- AGREGADO: Reportar progreso
+        # Reportar progreso
         if progress_callback:
             progress_callback(idx, total_oficios)
 
@@ -236,79 +312,6 @@ def generar_reintegros_pdf(
     return True, "\n".join(mensajes_exito)
 
 
-# --- 4. BLOQUE DE PRUEBA ---
-def solicitar_tipo_reintegro():
-    while True:
-        print("\n=== TIPO DE REINTEGRO ===")
-        tipo = input("Ingrese tipo de reintegro (TOTAL/PARCIAL): ").strip().upper()
-        if tipo not in ['TOTAL', 'PARCIAL']:
-            print("Error: Ingrese TOTAL o PARCIAL")
-            continue
-        if tipo == 'TOTAL':
-            return {'tipo': 'TOTAL','modo': None,'dias': 15,'concepto': None,'por_dias': False}
-        print("\n=== MODO DE REINTEGRO PARCIAL ===")
-        print("1. Por días")
-        print("2. Por concepto")
-        modo = input("Seleccione una opción (1/2): ").strip()
-        if modo == '1':
-            while True:
-                try:
-                    dias = int(input("\nIngrese número de días a reintegrar (1-15): "))
-                    if 1 <= dias <= 15:
-                        return {'tipo': 'PARCIAL','modo': 'DIAS','dias': dias,'concepto': None,'por_dias': False}
-                    print("Error: El número de días debe estar entre 1 y 15")
-                except ValueError:
-                    print("Error: Ingrese un número válido")
-        elif modo == '2':
-            concepto = input("\nIngrese el concepto a reintegrar (ejemplo: 07): ").strip()
-            por_dias = input("¿El reintegro del concepto es por días? (S/N): ").strip().upper()
-            if por_dias == 'S':
-                while True:
-                    try:
-                        dias = int(input("Ingrese número de días para el concepto (1-15): "))
-                        if 1 <= dias <= 15:
-                            return {'tipo': 'PARCIAL','modo': 'CONCEPTO','dias': dias,'concepto': concepto,'por_dias': True}
-                        print("Error: El número de días debe estar entre 1 y 15")
-                    except ValueError:
-                        print("Error: Ingrese un número válido")
-            elif por_dias == 'N':
-                return {'tipo': 'PARCIAL','modo': 'CONCEPTO','dias': 15,'concepto': concepto,'por_dias': False}
-        print("Opción no válida. Intente de nuevo.")
-
-
+# --- 5. BLOQUE DE PRUEBA ---
 if __name__ == "__main__":
     print("--- MODO DE PRUEBA DEL MOTOR ---")
-    RUTA_ANEXO_V_PRUEBA = r"C:\Users\Maxruso7\Desktop\ANEXOS\R06_202518_O1_AnexoV.xlsx"
-    RUTA_ANEXO_VI_PRUEBA = r"C:\Users\Maxruso7\Desktop\ANEXOS\R06_202518_O1_AnexoVI.xlsx"
-    RUTA_SALIDA_PRUEBA = r"C:\Users\Maxruso7\Desktop\py_reintegros"
-    
-    rfc_prueba = input("RFC para prueba (ej: BISA841115H59): ").strip().upper()
-    if not rfc_prueba:
-        rfc_prueba = "BISA841115H59"
-    
-    config_prueba = solicitar_tipo_reintegro()
-    
-    datos_manuales_prueba = {
-        "CAMPO_ABAJO_MOTIVO": 'Prueba de motor desde __main__',
-        "NIVEL_EDUCATIVO": "PREESCOLAR (PRUEBA)"
-    }
-    
-    def callback_prueba(actual, total):
-        print(f"Progreso: {actual}/{total} ({actual*100//total}%)")
-    
-    exito, mensaje = generar_reintegros_pdf(
-        rfc_prueba, 
-        config_prueba, 
-        datos_manuales_prueba,
-        RUTA_ANEXO_V_PRUEBA,
-        RUTA_ANEXO_VI_PRUEBA,
-        RUTA_SALIDA_PRUEBA,
-        progress_callback=callback_prueba
-    )
-    
-    if exito:
-        print("\n--- PRUEBA EXITOSA ---")
-        print(mensaje)
-    else:
-        print("\n--- PRUEBA FALLIDA ---")
-        print(mensaje)
