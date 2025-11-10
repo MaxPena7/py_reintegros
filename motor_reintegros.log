@@ -1,0 +1,348 @@
+2025-11-09 15:15:45 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-09 15:15:49 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-09 15:20:58 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-09 15:21:02 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-09 15:43:44 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-09 15:43:47 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-09 15:43:56 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-09 15:43:56 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-09 15:44:21 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-09 15:44:21 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-09 15:44:21 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-09 15:44:23 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-09 15:44:25 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-09 15:44:26 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-09 15:44:28 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-09 15:44:29 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-09 15:44:31 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-09 15:44:32 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-09 15:44:34 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-09 15:44:35 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-09 15:44:37 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-09 15:44:38 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-09 15:44:40 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-09 15:44:41 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-09 15:59:16 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-09 15:59:20 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-09 15:59:38 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-09 15:59:38 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-09 16:00:07 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-09 16:00:07 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-09 16:00:07 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-09 16:00:09 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-09 16:00:11 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-09 16:00:12 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-09 16:00:14 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-09 16:00:15 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-09 16:00:17 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-09 16:00:18 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-09 16:00:20 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-09 16:00:21 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-09 16:00:23 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-09 16:00:24 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-09 16:00:26 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-09 16:00:27 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-09 16:13:55 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-09 16:13:58 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-09 16:14:11 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-09 16:14:11 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-09 16:14:35 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-09 16:14:35 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-09 16:14:35 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-09 16:14:36 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-09 16:14:38 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-09 16:14:39 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-09 16:14:40 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-09 16:14:42 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-09 16:14:43 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-09 16:14:45 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-09 16:14:46 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-09 16:14:48 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-09 16:14:49 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-09 16:14:51 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-09 16:14:52 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-09 16:14:54 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-10 12:32:31 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 12:32:36 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 12:33:31 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 12:33:35 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 12:36:58 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 12:37:03 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 12:47:57 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 12:48:02 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:05:44 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:05:49 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:11:07 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:11:11 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:11:53 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:11:58 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:24:07 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:24:11 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:28:35 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:28:39 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:31:44 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:31:50 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:32:25 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:32:30 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:34:25 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 13:34:25 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 13:34:56 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 13:34:56 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-10 13:34:56 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-10 13:34:59 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-10 13:35:00 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-10 13:35:03 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-10 13:35:05 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-10 13:35:07 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-10 13:35:09 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-10 13:35:11 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-10 13:35:13 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-10 13:35:15 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-10 13:35:17 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-10 13:35:19 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-10 13:35:22 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-10 13:35:23 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-10 13:42:53 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:42:57 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:57:42 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 13:57:47 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 13:58:25 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 13:58:25 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 13:58:55 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 13:58:55 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-10 13:58:55 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-10 13:58:58 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-10 13:58:59 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-10 13:59:02 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-10 13:59:04 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-10 13:59:06 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-10 13:59:08 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-10 13:59:11 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-10 13:59:13 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-10 13:59:15 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-10 13:59:17 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-10 13:59:19 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-10 13:59:21 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-10 13:59:23 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-10 14:03:57 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:04:02 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:04:25 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:04:25 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:04:55 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:04:56 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:04:56 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:08:02 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:08:07 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 14:08:16 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:08:20 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:08:25 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:08:25 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:08:53 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:08:53 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:08:53 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:12:42 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:12:47 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:12:56 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:12:56 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:13:25 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:13:25 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:13:25 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:19:29 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:19:34 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:19:51 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:19:51 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:20:20 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:20:20 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:20:20 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:23:44 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:23:49 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:24:05 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:24:05 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:24:35 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:24:35 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:24:35 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:26:13 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:26:18 - reintegros_motor - WARNING - No se encontró ningún RFC que coincida con: PEFM989274F7
+2025-11-10 14:26:26 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:26:31 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:26:37 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:26:41 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:26:51 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:26:51 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:27:20 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:27:20 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:27:20 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:30:13 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:30:18 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:30:25 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:30:25 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:30:55 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:30:55 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:30:55 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:32:21 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:32:25 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:32:44 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:32:44 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:33:12 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:33:12 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:33:12 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:47:06 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:47:11 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:47:22 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:47:22 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:47:52 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:47:52 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:47:52 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:53:33 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:53:37 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:53:45 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:53:45 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:54:14 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:54:14 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:54:14 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 14:58:22 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 14:58:27 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 14:58:32 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 14:58:32 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 14:59:10 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 14:59:10 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 14:59:10 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:01:04 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:01:08 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:01:12 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:01:12 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:02:07 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:02:07 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:02:07 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:03:29 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:03:34 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:03:40 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:03:40 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:04:36 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:04:36 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:04:36 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:06:16 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:06:20 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:06:23 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:06:23 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:07:24 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:07:24 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:07:24 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:08:21 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:08:25 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:08:36 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:08:36 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:09:41 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:09:41 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:09:41 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:11:02 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:11:07 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:11:14 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:11:14 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:12:26 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:12:26 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:12:26 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:14:37 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:14:42 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:14:46 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:14:46 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:15:48 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:15:48 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:15:48 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:21:19 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:21:23 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:21:31 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:21:31 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:22:36 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:22:36 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:22:36 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:24:49 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:24:54 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:25:01 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:25:01 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:26:12 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:26:12 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:26:12 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:27:21 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:27:26 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:27:30 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:27:30 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:28:39 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:28:39 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:28:39 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:32:19 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:32:23 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:32:30 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:32:30 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:32:59 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:32:59 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:32:59 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:35:53 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:35:58 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:36:01 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:36:01 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:36:47 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:36:47 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:36:47 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:38:28 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:38:33 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:38:39 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:38:39 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:39:50 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:39:50 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:39:50 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:42:47 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:42:52 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 15:43:00 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:43:00 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:43:51 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:43:51 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:43:51 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357
+2025-11-10 15:45:04 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:45:09 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 15:45:15 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:45:15 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:46:20 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:46:20 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 14 oficio(s) para este RFC.
+2025-11-10 15:46:20 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-10 15:46:22 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508495
+2025-11-10 15:46:25 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508496
+2025-11-10 15:46:27 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508497
+2025-11-10 15:46:28 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508498
+2025-11-10 15:46:31 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508499
+2025-11-10 15:46:32 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508500
+2025-11-10 15:46:34 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508501
+2025-11-10 15:46:36 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508502
+2025-11-10 15:46:38 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508503
+2025-11-10 15:46:40 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508504
+2025-11-10 15:46:42 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508505
+2025-11-10 15:46:44 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509855
+2025-11-10 15:46:47 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11509856
+2025-11-10 15:53:05 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 15:53:09 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: AURA840513D19
+2025-11-10 15:53:12 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 15:53:12 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 15:53:59 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 15:53:59 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 15:53:59 - reintegros_motor - INFO - Procesando: AURA840513D19 - Comprobante: 11507362
+2025-11-10 16:07:22 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 16:07:28 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: AURA840513D19
+2025-11-10 16:07:30 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 16:07:30 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 16:08:28 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 16:08:28 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 16:08:28 - reintegros_motor - INFO - Procesando: AURA840513D19 - Comprobante: 11507362
+2025-11-10 16:12:24 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 16:12:28 - reintegros_motor - INFO - Encontradas 14 plazas para RFC: PUVM750703KW8
+2025-11-10 16:12:32 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 16:12:32 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 16:13:47 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 16:13:47 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 16:13:47 - reintegros_motor - INFO - Procesando: PUVM750703KW8 - Comprobante: 11508494
+2025-11-10 16:16:19 - reintegros_motor - INFO - Leyendo Anexo V desde: C:/Users/Maxruso7/Desktop/ANEXOS/R06_202518_O1_AnexoV.xlsx
+2025-11-10 16:16:23 - reintegros_motor - INFO - Encontradas 1 plazas para RFC: PEFM9809274F7
+2025-11-10 16:16:27 - reintegros_motor - INFO - Iniciando 'py_reintegros' (Modo PDF con capas)...
+2025-11-10 16:16:27 - reintegros_motor - INFO - Cargando Anexos (esto puede tardar)...
+2025-11-10 16:16:54 - reintegros_motor - INFO - Anexos cargados exitosamente
+2025-11-10 16:16:54 - reintegros_motor - INFO - ¡Coincidencia encontrada! Se procesarán 1 oficio(s) para este RFC.
+2025-11-10 16:16:54 - reintegros_motor - INFO - Procesando: PEFM9809274F7 - Comprobante: 11507357

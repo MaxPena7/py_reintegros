@@ -15,7 +15,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.2px;
     line-height: 1.2;
     background-image: url("fondo_page.jpg");
     background-repeat: no-repeat;
@@ -58,17 +58,20 @@ table {
 }
 th, td {
     border: 1px solid black;
-    padding: 3px 4px;
-    font-size: 10px;
+    padding: 2px 5px;        /* Aumentado ligeramente */
+    font-size: 11px;         /* Un poco más grande */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    text-rendering: geometricPrecision;        /* Texto más grueso para mejor legibilidad */
 }
+/*Esta parte controla los encabezados de las tablas de percepciones y deducciones */
 th {
     background-color: #f0f0f0;
     font-weight: bold;
-    font-size: 11px;
-    text-align: center;
+    font-size: 9.5px;
+    text-align: left;
+    letter-spacing: 0.2px !important;  /* FORZAR también aquí */
 }
 /* Columnas para tablas de percepciones y deducciones */
 .col-cpto { width: 9.75%; text-align: center; }
@@ -88,11 +91,14 @@ tfoot td {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+/*Esta parte controla el diseño de la tabla de información del empleado */
 .info-grid td {
     border: 1px solid black;
-    padding: 5px;
+    padding: 6px;            /* Más padding */
     vertical-align: top;
     font-size: 12px;
+    letter-spacing: 0.3px !important;  /* FORZAR aquí también */
+    font-weight: 500;
 }
 .info-cell-label { font-weight: bold; }
 

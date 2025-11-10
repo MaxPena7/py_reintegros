@@ -2,6 +2,10 @@ import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import os
 import threading
+import json
+from pathlib import Path
+import traceback
+from datetime import datetime
 
 try:
     import py_reintegros_pdf as motor
@@ -48,6 +52,9 @@ class App(ctk.CTk):
         self.rutas_anexo_vi_lista = []
         self.cargando = False
         self.spinner_frame = None
+
+        # --- CARGAR CONFIGURACIÓN GUARDADA ---
+        self.cargar_configuracion_guardada()
 
         # --- 1. SELECCIÓN DE ARCHIVOS ---
         self.frame_archivos = ctk.CTkFrame(self.main_scrollable)
@@ -106,6 +113,12 @@ class App(ctk.CTk):
         self.scrollable_plazas = ctk.CTkScrollableFrame(self.frame_plazas, height=150)
         self.scrollable_plazas.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
         self.scrollable_plazas.grid_columnconfigure(0, weight=1)
+        
+        # PREVENIR QUE EL SCROLL INTERIOR MUEVA TODO EL FRAME
+        self.scrollable_plazas.bind("<Enter>", lambda e: self._activar_scroll_plazas(True))
+        self.scrollable_plazas.bind("<Leave>", lambda e: self._activar_scroll_plazas(False))
+
+
 
         # --- 4. LÓGICA DE REINTEGRO ---
         self.frame_logica = ctk.CTkFrame(self.main_scrollable)
@@ -165,10 +178,103 @@ class App(ctk.CTk):
         self.progress_bar.set(0)
         self.progress_bar.grid_remove()
         
-        self.lbl_status = ctk.CTkLabel(self.main_scrollable, text="Listo.", height=40, text_color="gray", wraplength=680)
+        self.lbl_status = ctk.CTkLabel(
+            self.main_scrollable, 
+            text="Listo. Atajos: Enter=Consultar | Ctrl+G=Generar | Ctrl+Q=Salir | Esc=Limpiar", 
+            height=40, 
+            text_color="gray", 
+            wraplength=680,
+            font=ctk.CTkFont(size=11)
+        )
         self.lbl_status.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
         self.actualizar_visibilidad()
+        
+        # --- CONFIGURAR ATAJOS DE TECLADO ---
+        self.configurar_atajos_teclado()
+
+    def configurar_atajos_teclado(self):
+        """Configura los atajos de teclado para la aplicación"""
+        # Enter para consultar plazas
+        self.entry_rfc.bind('<Return>', lambda event: self.consultar_plazas())
+        
+        # Ctrl+G para generar reintegros
+        self.bind('<Control-g>', lambda event: self.iniciar_generacion())
+        self.bind('<Control-G>', lambda event: self.iniciar_generacion())  # Mayúsculas también
+        
+        # Ctrl+Q para salir
+        self.bind('<Control-q>', lambda event: self.quit())
+        self.bind('<Control-Q>', lambda event: self.quit())
+        
+        # Escape para limpiar o cerrar
+        self.bind('<Escape>', lambda event: self.limpiar_interface())
+
+    def limpiar_interface(self):
+        """Limpia la interfaz al presionar Escape"""
+        # Solo limpia si no hay procesos en curso
+        if not self.cargando and self.btn_generar.cget('state') == 'normal':
+            self.entry_rfc.delete(0, 'end')
+            self.entry_nivel.delete(0, 'end')
+            self.entry_motivo_2.delete('1.0', 'end')
+            self.entry_parcial_dias.delete(0, 'end')
+            self.entry_parcial_concepto.delete(0, 'end')
+            self.entry_concepto_dias.delete(0, 'end')
+            self.frame_plazas.grid_remove()
+            self.actualizar_status("Interfaz limpiada. Listo para nueva consulta.", "gray")
+
+    def cargar_configuracion_guardada(self):
+        """Carga la configuración guardada en config.json"""
+        try:
+            config_path = Path("config.json")
+            if config_path.exists():
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                
+                # Cargar rutas de Anexo V
+                if 'ultima_ruta_anexo_v' in config:
+                    rutas_v = config['ultima_ruta_anexo_v']
+                    if isinstance(rutas_v, list) and rutas_v:
+                        self.rutas_anexo_v_lista = rutas_v
+                        if len(rutas_v) == 1:
+                            self.ruta_anexo_v.set(rutas_v[0])
+                        else:
+                            self.ruta_anexo_v.set(f"{len(rutas_v)} archivo(s) seleccionado(s)")
+                
+                # Cargar rutas de Anexo VI
+                if 'ultima_ruta_anexo_vi' in config:
+                    rutas_vi = config['ultima_ruta_anexo_vi']
+                    if isinstance(rutas_vi, list) and rutas_vi:
+                        self.rutas_anexo_vi_lista = rutas_vi
+                        if len(rutas_vi) == 1:
+                            self.ruta_anexo_vi.set(rutas_vi[0])
+                        else:
+                            self.ruta_anexo_vi.set(f"{len(rutas_vi)} archivo(s) seleccionado(s)")
+                
+                # Cargar carpeta de salida
+                if 'ultima_carpeta_salida' in config and config['ultima_carpeta_salida']:
+                    self.ruta_carpeta_salida.set(config['ultima_carpeta_salida'])
+                    
+                print("Configuración cargada exitosamente desde config.json")
+                
+        except Exception as e:
+            print(f"Error al cargar configuración: {e}")
+            # No mostramos error al usuario para no interrumpir la experiencia
+
+    def actualizar_configuracion_rutas(self):
+        """Actualiza el archivo config.json con las rutas actuales"""
+        try:
+            config = motor.cargar_config()
+            
+            # Actualizar con las rutas actuales de la GUI
+            config['ultima_ruta_anexo_v'] = self.rutas_anexo_v_lista
+            config['ultima_ruta_anexo_vi'] = self.rutas_anexo_vi_lista
+            config['ultima_carpeta_salida'] = self.ruta_carpeta_salida.get()
+            
+            motor.guardar_config(config)
+            print("Configuración de rutas actualizada")
+            
+        except Exception as e:
+            print(f"Error al actualizar configuración: {e}")
 
     def seleccionar_anexo_v(self):
         rutas = filedialog.askopenfilenames(title="Seleccionar Anexo V (puedes seleccionar múltiples)", filetypes=[("Excel", "*.xlsx")])
@@ -178,6 +284,9 @@ class App(ctk.CTk):
                 self.ruta_anexo_v.set(rutas[0])
             else:
                 self.ruta_anexo_v.set(f"{len(rutas)} archivo(s) seleccionado(s)")
+            
+            # Actualizar configuración inmediatamente después de seleccionar
+            self.actualizar_configuracion_rutas()
 
     def seleccionar_anexo_vi(self):
         rutas = filedialog.askopenfilenames(title="Seleccionar Anexo VI (puedes seleccionar múltiples)", filetypes=[("Excel", "*.xlsx")])
@@ -187,10 +296,43 @@ class App(ctk.CTk):
                 self.ruta_anexo_vi.set(rutas[0])
             else:
                 self.ruta_anexo_vi.set(f"{len(rutas)} archivo(s) seleccionado(s)")
+            
+            # Actualizar configuración inmediatamente después de seleccionar
+            self.actualizar_configuracion_rutas()
 
     def seleccionar_salida(self):
         ruta = filedialog.askdirectory(title="Seleccionar Carpeta de Salida")
-        if ruta: self.ruta_carpeta_salida.set(ruta)
+        if ruta: 
+            self.ruta_carpeta_salida.set(ruta)
+            # Actualizar configuración inmediatamente después de seleccionar
+            self.actualizar_configuracion_rutas()
+            
+    def _activar_scroll_plazas(self, activar):
+        """Activa o desactiva el scroll interno de plazas."""
+        if activar:
+            # Cuando el mouse entra en el área de plazas → solo mover el scroll interno
+            self.scrollable_plazas.bind_all("<MouseWheel>", self._scroll_plazas)
+        else:
+            # Cuando el mouse sale → devolver el control del scroll al principal
+            self.scrollable_plazas.unbind_all("<MouseWheel>")
+            self.main_scrollable.bind_all("<MouseWheel>", self._scroll_principal)
+
+    def _scroll_principal(self, event):
+        """Restaura el scroll del frame principal cuando el mouse no está en las plazas."""
+        try:
+            self.main_scrollable._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
+        except Exception:
+            pass
+
+    def _scroll_plazas(self, event):
+        """Controla el desplazamiento interno del frame de plazas."""
+        try:
+            # Ajuste de velocidad (el *3* hace que sea más rápido)
+            self.scrollable_plazas._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
+            return "break"
+        except Exception:
+            pass
+
 
     def consultar_plazas(self):
         rfc = self.entry_rfc.get().strip()
@@ -209,20 +351,41 @@ class App(ctk.CTk):
         threading.Thread(target=self._consultar_plazas_thread, args=(rfc, self.rutas_anexo_v_lista), daemon=True).start()
 
     def _consultar_plazas_thread(self, rfc, anexo_v):
-        exito, mensaje, plazas = motor.obtener_plazas_por_rfc(rfc, anexo_v)
-        
-        def _update():
-            self.ocultar_spinner()
-            self.btn_consultar.configure(state="normal")
-            if exito:
-                self.plazas_disponibles = plazas
-                self.mostrar_plazas(plazas)
-                messagebox.showinfo("Éxito", f"Se encontraron {len(plazas)} plaza(s).")
-            else:
-                messagebox.showerror("Error", mensaje)
+        try:
+            exito, mensaje, plazas = motor.obtener_plazas_por_rfc(rfc, anexo_v)
+            
+            def _update():
+                self.ocultar_spinner()
+                self.btn_consultar.configure(state="normal")
+                if exito:
+                    self.plazas_disponibles = plazas
+                    self.mostrar_plazas(plazas)
+                    messagebox.showinfo("Éxito", f"Se encontraron {len(plazas)} plaza(s).")
+                else:
+                    messagebox.showerror("Error", mensaje)
+                    self.frame_plazas.grid_remove()
+            
+            self.after(0, _update)
+            
+        except Exception as e:
+            # Manejo de errores inesperados
+            error_msg = f"Error inesperado al consultar plazas:\n{str(e)}"
+            print(f"ERROR: {error_msg}")
+            
+            def _update_error():
+                self.ocultar_spinner()
+                self.btn_consultar.configure(state="normal")
+                messagebox.showerror(
+                    "Error Crítico", 
+                    f"No se pudo leer el archivo Excel. Posibles causas:\n\n"
+                    f"• El archivo está dañado o corrupto\n"
+                    f"• El archivo está abierto en otro programa\n"
+                    f"• El formato del archivo no es compatible\n\n"
+                    f"Error técnico: {str(e)}"
+                )
                 self.frame_plazas.grid_remove()
-        
-        self.after(0, _update)
+            
+            self.after(0, _update_error)
 
     def mostrar_plazas(self, plazas):
         for widget in self.scrollable_plazas.winfo_children():
@@ -345,10 +508,64 @@ class App(ctk.CTk):
             if exito:
                 self.actualizar_status(f"¡Éxito!\n{mensaje}", "green")
             else:
-                self.actualizar_status(f"Error:\n{mensaje}", "red")
+                # Verificar si es un error de estructura de archivos
+                if any(keyword in mensaje for keyword in ["Estructura de archivos", "Columnas faltantes", "estructura"]):
+                    self.actualizar_status("Error en estructura de archivos Excel", "red")
+                    messagebox.showerror(
+                        "Error de Estructura de Archivos",
+                        f"{mensaje}\n\n"
+                        f"Por favor, verifique que:\n"
+                        f"• Los archivos sean los Anexos V y VI correctos\n"
+                        f"• Los encabezados de columna no hayan cambiado\n"
+                        f"• Los archivos no estén corruptos\n\n"
+                        f"Se ha guardado un log detallado para diagnóstico."
+                    )
+                else:
+                    self.actualizar_status(f"Error:\n{mensaje}", "red")
+                    # Mostrar mensaje de error general si no es de estructura
+                    if "Error" in mensaje or "error" in mensaje.lower():
+                        messagebox.showerror("Error", mensaje)
 
         except Exception as e:
-            self.actualizar_status(f"Error Inesperado:\n{e}", "red")
+            # Log detallado del error
+            error_traceback = traceback.format_exc()
+            error_msg = f"Error inesperado al generar reintegros:\n{str(e)}"
+            
+            # Guardar en archivo de log
+            self.guardar_log_error(error_traceback, rfc, plazas_marcadas)
+            
+            # Mostrar al usuario
+            self.actualizar_status("Error crítico. Se ha guardado un log para diagnóstico.", "red")
+            messagebox.showerror(
+                "Error Crítico", 
+                f"Ocurrió un error inesperado durante la generación.\n\n"
+                f"Detalles:\n{str(e)}\n\n"
+                f"Se ha guardado un archivo 'error_log.txt' con detalles técnicos.\n"
+                f"Por favor, contacte al administrador del sistema."
+            )
+
+    def guardar_log_error(self, error_traceback, rfc, plazas_marcadas):
+        """Guarda el error detallado en un archivo de log"""
+        try:
+            log_filename = "error_log.txt"
+            with open(log_filename, "a", encoding="utf-8") as log_file:
+                log_file.write("=" * 80 + "\n")
+                log_file.write(f"ERROR - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                log_file.write("=" * 80 + "\n")
+                log_file.write(f"RFC: {rfc}\n")
+                log_file.write(f"Plazas seleccionadas: {plazas_marcadas}\n")
+                log_file.write(f"Anexo V: {self.rutas_anexo_v_lista}\n")
+                log_file.write(f"Anexo VI: {self.rutas_anexo_vi_lista}\n")
+                log_file.write(f"Carpeta salida: {self.ruta_carpeta_salida.get()}\n")
+                log_file.write(f"Tipo reintegro: {self.tipo_reintegro_var.get()}\n")
+                log_file.write("\nTRACEBACK COMPLETO:\n")
+                log_file.write(error_traceback)
+                log_file.write("\n" + "=" * 80 + "\n\n")
+            
+            print(f"Error guardado en: {log_filename}")
+            
+        except Exception as log_error:
+            print(f"No se pudo guardar el log: {log_error}")    
 
     def actualizar_progreso(self, actual, total):
         def _update():
