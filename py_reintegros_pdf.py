@@ -340,8 +340,13 @@ def generar_reintegros_pdf(
         return False, msg  
 
     # --- Filtrar Anexo V por RFC ---
-    filtro = (df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip())
-    oficios_encontrados = df_anexo_v[filtro]
+    if no_comprobantes_seleccionados:
+        filtro = df_anexo_v['NO_COMPROBANTE'].astype(str).str.strip().isin(no_comprobantes_seleccionados)
+        oficios_encontrados = df_anexo_v[filtro]
+    else:
+        filtro = df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip()
+        oficios_encontrados = df_anexo_v[filtro]
+
 
     if oficios_encontrados.empty:
         msg = f"--- ERROR: No se encontró ningún registro que coincida con el RFC: {rfc_input} ---"

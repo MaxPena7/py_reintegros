@@ -108,7 +108,7 @@ class App(ctk.CTk):
         self.entry_nivel = ctk.CTkEntry(self.frame_datos, placeholder_text="Ej: PREESCOLAR")
         self.entry_nivel.grid(row=1, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
         
-        ctk.CTkLabel(self.frame_datos, text="Motivo (Línea 2):").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+        ctk.CTkLabel(self.frame_datos, text="Motivo:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
         self.entry_motivo_2 = ctk.CTkTextbox(self.frame_datos, height=80)
         self.entry_motivo_2.grid(row=2, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
 
