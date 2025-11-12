@@ -230,12 +230,14 @@ def obtener_plazas_por_rfc(rfc_input, rutas_anexo_v):
         for ruta in rutas_anexo_v:
             logger.info(f"Leyendo Anexo V desde: {ruta}")
             df_anexo_v = pd.read_excel(ruta, dtype=str)
-            filtro = (df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip())
+            filtro = df_anexo_v['RFC'].astype(str).str.upper().str.contains(str(rfc_input).upper().strip())
+
             oficios = df_anexo_v[filtro]
             
             if not oficios.empty:
                 for idx, fila in oficios.iterrows():
                     plaza_info = {
+                        'RFC': fila.get('RFC', '').strip(),
                         'NO_COMPROBANTE': fila.get('NO_COMPROBANTE', ''),
                         'CLAVE_PLAZA': fila.get('CLAVE_PLAZA', ''),
                         'PERIODO': fila.get('PERIODO', ''),

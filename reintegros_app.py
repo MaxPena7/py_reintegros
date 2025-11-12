@@ -415,7 +415,7 @@ class App(ctk.CTk):
             var = ctk.BooleanVar(value=False)
             self.plazas_seleccionadas[plaza['NO_COMPROBANTE']] = var
             
-            texto_plaza = f"Comprobante: {plaza['NO_COMPROBANTE']} | Clave: {plaza['CLAVE_PLAZA']} | Período: {plaza['PERIODO']}"
+            texto_plaza = f"RFC: {plaza['RFC']} | Comprobante: {plaza['NO_COMPROBANTE']} | Clave: {plaza['CLAVE_PLAZA']} | Período: {plaza['PERIODO']}"
             
             frame_plaza = ctk.CTkFrame(self.scrollable_plazas, fg_color="transparent")
             frame_plaza.pack(fill="x", padx=10, pady=5)
