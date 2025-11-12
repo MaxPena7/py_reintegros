@@ -11,6 +11,16 @@ import json  # <-- agregado para persistencia de rutas
 import logging
 import sys
 
+def resource_path(relative_path):
+    """Obtiene la ruta absoluta al recurso, funciona para desarrollo y para PyInstaller"""
+    try:
+        # PyInstaller crea una carpeta temporal y almacena la ruta en _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
 # --- CONFIGURACIÓN DE LOGGING ---
 def setup_logging():
     """Configura el sistema de logging para el motor"""
@@ -43,12 +53,27 @@ def setup_logging():
 # Crear el logger global
 logger = setup_logging()
 
-# --- 1. CONFIGURACIÓN DE RUTAS (CONSTANTES) ---
-ARCHIVO_PLANTILLA_HTML = "plantilla.html"
-RUTA_WKHTMLTOPDF = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-PDF_FONDO = "fondo_reintegro.pdf"
-ARCHIVO_CONFIG = Path("config.json")  # <-- archivo de persistencia
+# --- CONFIGURACIÓN DE RUTAS (MODIFICADA) ---
+ARCHIVO_PLANTILLA_HTML = resource_path("plantilla.html")
+RUTA_WKHTMLTOPDF = resource_path("wkhtmltopdf/bin/wkhtmltopdf.exe")  #CAMBIADO
+PDF_FONDO = resource_path("fondo_reintegro.pdf")
+ARCHIVO_CONFIG = Path(resource_path("config.json"))
 
+# Verificar si wkhtmltopdf existe, si no, buscar en otras ubicaciones
+if not os.path.exists(RUTA_WKHTMLTOPDF):
+    # Intentar otras rutas comunes
+    posibles_rutas = [
+        r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe",
+        r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe",
+        os.path.join(os.path.dirname(__file__), "wkhtmltopdf", "bin", "wkhtmltopdf.exe")
+    ]
+    
+    for ruta in posibles_rutas:
+        if os.path.exists(ruta):
+            RUTA_WKHTMLTOPDF = ruta
+            break
+    else:
+        logger.error("No se encontró wkhtmltopdf en ninguna ubicación")
 options = {
     'page-size': 'Letter',
     'encoding': "UTF-8",
@@ -301,15 +326,16 @@ def generar_reintegros_pdf(
         logger.error(msg)
         return False, msg
 
-    # --- Configurar Jinja2 ---
+    # --- Configurar Jinja2 ---con el resource_path
     try:
-        script_dir = os.path.dirname(__file__)
-        env = Environment(loader=FileSystemLoader(script_dir if script_dir else '.'))
-        template = env.get_template(ARCHIVO_PLANTILLA_HTML)
+        # Obtener el directorio donde están los recursos
+        base_path = os.path.dirname(resource_path("plantilla.html"))
+        env = Environment(loader=FileSystemLoader(base_path))
+        template = env.get_template("plantilla.html")  # ← Nombre directo del archivo
     except Exception as e:
-        msg = f"ERROR: No se encontró la plantilla '{ARCHIVO_PLANTILLA_HTML}'. Error: {e}"
+        msg = f"ERROR: No se encontró la plantilla 'plantilla.html'. Error: {e}"
         logger.error(msg)
-        return False, msg
+        return False, msg  
 
     # --- Filtrar Anexo V por RFC ---
     filtro = (df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip())

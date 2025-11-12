@@ -1,0 +1,20 @@
+# Carpetas
+__pycache__/
+build/
+dist/
+.venv/
+.vscode/
+archivos secundarios/
+Output/
+wkhtmltopdf/
+
+# Archivos de configuración
+config.json
+instalador.iss
+
+# Archivos temporales
+tempCodeRunnerFile.py
+motor_reintegros.log
+
+
+

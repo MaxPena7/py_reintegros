@@ -18,15 +18,33 @@ except ImportError:
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
 
+import sys
+import os
+
+def resource_path(relative_path):
+    """Obtiene la ruta absoluta al recurso, funciona para desarrollo y para PyInstaller"""
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("Subjefatura de Nóminas - Generador de Reintegros PDF")
-        self.iconbitmap(default="reintegro_icono.ico")
         self.geometry("700x1000")
         self.grid_columnconfigure(0, weight=1)
+        try:
+            self.iconbitmap(resource_path("reintegro_icono.ico"))
+        except Exception as e:
+            print(f"Error cargando icono: {e}")
+            # Si falla, intentar sin icono pero continuar
+            try:
+                self.iconbitmap("reintegro_icono.ico")
+            except:
+                pass
 
         # Frame scrolleable principal
         self.main_scrollable = ctk.CTkScrollableFrame(self)
