@@ -7,18 +7,16 @@ import pdfkit
 import PyPDF2
 import math
 import traceback
-import json  # <-- agregado para persistencia de rutas
+import json
 import logging
 import sys
 
 def resource_path(relative_path):
     """Obtiene la ruta absoluta al recurso, funciona para desarrollo y para PyInstaller"""
     try:
-        # PyInstaller crea una carpeta temporal y almacena la ruta en _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-    
     return os.path.join(base_path, relative_path)
 
 # --- CONFIGURACIÓN DE LOGGING ---
@@ -27,9 +25,7 @@ def setup_logging():
     logger = logging.getLogger('reintegros_motor')
     logger.setLevel(logging.INFO)
     
-    # Evitar logs duplicados
     if not logger.handlers:
-        # Formato de los logs
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -40,9 +36,9 @@ def setup_logging():
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(formatter)
         
-        # Handler para consola (solo durante desarrollo)
+        # Handler para consola
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.WARNING)  # Solo warnings y errores en consola
+        console_handler.setLevel(logging.WARNING)
         console_handler.setFormatter(formatter)
         
         logger.addHandler(file_handler)
@@ -53,15 +49,14 @@ def setup_logging():
 # Crear el logger global
 logger = setup_logging()
 
-# --- CONFIGURACIÓN DE RUTAS (MODIFICADA) ---
+# --- CONFIGURACIÓN DE RUTAS ---
 ARCHIVO_PLANTILLA_HTML = resource_path("plantilla.html")
-RUTA_WKHTMLTOPDF = resource_path("wkhtmltopdf/bin/wkhtmltopdf.exe")  #CAMBIADO
+RUTA_WKHTMLTOPDF = resource_path("wkhtmltopdf/bin/wkhtmltopdf.exe")
 PDF_FONDO = resource_path("fondo_reintegro.pdf")
 ARCHIVO_CONFIG = Path(resource_path("config.json"))
 
 # Verificar si wkhtmltopdf existe, si no, buscar en otras ubicaciones
 if not os.path.exists(RUTA_WKHTMLTOPDF):
-    # Intentar otras rutas comunes
     posibles_rutas = [
         r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe",
         r"C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe",
@@ -74,6 +69,7 @@ if not os.path.exists(RUTA_WKHTMLTOPDF):
             break
     else:
         logger.error("No se encontró wkhtmltopdf en ninguna ubicación")
+
 options = {
     'page-size': 'Letter',
     'encoding': "UTF-8",
@@ -123,6 +119,7 @@ def superponer_pdfs(pdf_contenido, pdf_fondo, pdf_salida):
             
             pdf_fondo_reader = PyPDF2.PdfReader(pdf_fondo_file)
             pagina_fondo = pdf_fondo_reader.pages[0]
+            
             pdf_contenido_reader = PyPDF2.PdfReader(pdf_contenido_file)
             
             for pagina_contenido in pdf_contenido_reader.pages:
@@ -158,22 +155,13 @@ def convertir_html_a_pdf(html_string, ruta_pdf_salida):
 def truncar_a_2_decimales(valor):
     return math.trunc(float(valor) * 100) / 100.0
 
-# Agregar estas funciones en py_reintegros_pdf.py
-
 def verificar_estructura_anexos(df_anexo_v, df_anexo_vi):
-    """
-    Verifica que los DataFrames tengan las columnas esperadas
-    Retorna: (bool, str) - (éxito, mensaje de error)
-    """
     try:
-        # Columnas requeridas para Anexo V
         columnas_requeridas_v = [
             'RFC', 'NO_COMPROBANTE', 'CLAVE_PLAZA', 'PERIODO', 
             'PRIMER_APELLIDO', 'SEGUNDO_APELLIDO', 'NOMBRE(S)', 
             'CCT', 'FECHA_INICIO', 'FECHA_TERMINO'
         ]
-        
-        # Columnas requeridas para Anexo VI
         columnas_requeridas_vi = [
             'NO_COMPROBANTE', 'TIPO_CONCEPTO', 'COD_CONCEPTO', 
             'DESC_CONCEPTO', 'IMPORTE'
@@ -202,7 +190,6 @@ def verificar_estructura_anexos(df_anexo_v, df_anexo_vi):
         return False, f"Error al verificar estructura: {str(e)}"
 
 def guardar_log_estructura(error_mensaje, rutas_anexo_v, rutas_anexo_vi):
-    """Guarda errores de estructura en el log"""
     try:
         log_filename = "estructura_errores.log"
         with open(log_filename, "a", encoding="utf-8") as log_file:
@@ -213,7 +200,6 @@ def guardar_log_estructura(error_mensaje, rutas_anexo_v, rutas_anexo_vi):
             log_file.write(f"Anexo VI: {rutas_anexo_vi}\n")
             log_file.write(f"Error: {error_mensaje}\n")
             log_file.write("=" * 80 + "\n\n")
-        
         return log_filename
     except Exception as e:
         logger.error(f"No se pudo guardar log de estructura: {e}")
@@ -222,8 +208,7 @@ def guardar_log_estructura(error_mensaje, rutas_anexo_v, rutas_anexo_vi):
 
 # --- 3. FUNCIÓN: OBTENER PLAZAS POR RFC ---
 def obtener_plazas_por_rfc(rfc_input, rutas_anexo_v):
-    if isinstance(rutas_anexo_v, str):
-        rutas_anexo_v = [rutas_anexo_v]
+    if isinstance(rutas_anexo_v, str):rutas_anexo_v = [rutas_anexo_v]
     
     plazas = []
     try:
@@ -240,6 +225,7 @@ def obtener_plazas_por_rfc(rfc_input, rutas_anexo_v):
                         'RFC': fila.get('RFC', '').strip(),
                         'NO_COMPROBANTE': fila.get('NO_COMPROBANTE', ''),
                         'CLAVE_PLAZA': fila.get('CLAVE_PLAZA', ''),
+                        'CCT': fila.get('CCT', ''),
                         'PERIODO': fila.get('PERIODO', ''),
                         'nombre_completo': f"{fila.get('PRIMER_APELLIDO', '')} {fila.get('SEGUNDO_APELLIDO', '')} {fila.get('NOMBRE(S)', '')}".strip()
                     }
@@ -264,7 +250,8 @@ def generar_reintegros_pdf(
         ruta_anexo_vi,
         ruta_carpeta_salida,
         no_comprobantes_seleccionados=None,
-        progress_callback=None
+        progress_callback=None,
+        monto_manual_override=None  # <--- NUEVO ARGUMENTO
     ):
     
     # --- Persistencia: guardar rutas seleccionadas ---
@@ -280,7 +267,7 @@ def generar_reintegros_pdf(
     if isinstance(ruta_anexo_vi, str):
         ruta_anexo_vi = [ruta_anexo_vi]
     
-    logger.info("Iniciando 'py_reintegros' (Modo PDF con capas)...")
+    logger.info(f"Iniciando 'py_reintegros'. RFC: {rfc_input}. Manual Override: {monto_manual_override}")
 
     # --- Validar rutas ---
     for ruta in ruta_anexo_v:
@@ -312,7 +299,6 @@ def generar_reintegros_pdf(
         # VERIFICAR ESTRUCTURA DE ANEXOS
         exito_estructura, mensaje_estructura = verificar_estructura_anexos(df_anexo_v, df_anexo_vi)
         if not exito_estructura:
-            # Guardar en log de estructura
             log_file = guardar_log_estructura(mensaje_estructura, ruta_anexo_v, ruta_anexo_vi)
             return False, f"{mensaje_estructura}\n\nSe ha guardado un log en: {log_file}"
         
@@ -321,6 +307,7 @@ def generar_reintegros_pdf(
     except Exception as e:
         logger.error(f"ERROR al leer los archivos Excel: {e}", exc_info=True)
         return False, f"ERROR al leer los archivos Excel: {e}"
+    
     # --- Obtener PDF de fondo ---
     pdf_fondo = obtener_pdf_fondo()
     if not pdf_fondo:
@@ -328,18 +315,17 @@ def generar_reintegros_pdf(
         logger.error(msg)
         return False, msg
 
-    # --- Configurar Jinja2 ---con el resource_path
+    # --- Configurar Jinja2 ---
     try:
-        # Obtener el directorio donde están los recursos
         base_path = os.path.dirname(resource_path("plantilla.html"))
         env = Environment(loader=FileSystemLoader(base_path))
-        template = env.get_template("plantilla.html")  # ← Nombre directo del archivo
+        template = env.get_template("plantilla.html")
     except Exception as e:
         msg = f"ERROR: No se encontró la plantilla 'plantilla.html'. Error: {e}"
         logger.error(msg)
-        return False, msg  
+        return False, msg 
 
-    # --- Filtrar Anexo V por RFC ---
+    # --- Filtrar Anexo V ---
     if no_comprobantes_seleccionados:
         filtro = df_anexo_v['NO_COMPROBANTE'].astype(str).str.strip().isin(no_comprobantes_seleccionados)
         oficios_encontrados = df_anexo_v[filtro]
@@ -347,14 +333,13 @@ def generar_reintegros_pdf(
         filtro = df_anexo_v['RFC'].astype(str).str.strip() == str(rfc_input).strip()
         oficios_encontrados = df_anexo_v[filtro]
 
-
     if oficios_encontrados.empty:
         msg = f"--- ERROR: No se encontró ningún registro que coincida con el RFC: {rfc_input} ---"
         logger.error(msg)
         return False, msg
 
-    # --- Filtrar solo los comprobantes seleccionados ---
     if no_comprobantes_seleccionados:
+        # Doble verificación para asegurar que solo procesamos lo pedido
         oficios_encontrados = oficios_encontrados[
             oficios_encontrados['NO_COMPROBANTE'].isin(no_comprobantes_seleccionados)
         ]
@@ -367,10 +352,7 @@ def generar_reintegros_pdf(
     
     # Preparar fecha
     ahora = datetime.now()
-    dias_semana = {
-        0: "lunes", 1: "martes", 2: "miércoles",
-        3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"
-    }
+    dias_semana = {0: "lunes", 1: "martes", 2: "miércoles", 3: "jueves", 4: "viernes", 5: "sábado", 6: "domingo"}
     meses_nombre = {
         1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
         7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
@@ -386,45 +368,63 @@ def generar_reintegros_pdf(
         no_comprobante = fila_v.get('NO_COMPROBANTE', 'S/C')
         rfc = fila_v.get('RFC', 'S/RFC')
         logger.info(f"Procesando: {rfc} - Comprobante: {no_comprobante}")
+        
         nombre_completo = f"{fila_v.get('PRIMER_APELLIDO', '')} {fila_v.get('SEGUNDO_APELLIDO', '')} {fila_v.get('NOMBRE(S)', '')}".strip()
         qna = fila_v.get('PERIODO', '')
+
         detalles = df_anexo_vi[df_anexo_vi['NO_COMPROBANTE'] == no_comprobante]
+        
         percepciones_df = detalles[detalles['TIPO_CONCEPTO'] == 'P']
         deducciones_df = detalles[detalles['TIPO_CONCEPTO'] == 'D']
+
         total_percepciones = percepciones_df['IMPORTE'].sum()
         total_deducciones = deducciones_df['IMPORTE'].sum()
-        total_liquido = truncar_a_2_decimales(total_percepciones - total_deducciones)
-        total_a_reintegrar = 0.0
-        
-        if config_reintegro['tipo'] == 'TOTAL':
-            total_a_reintegrar = total_liquido
+        total_liquido = total_percepciones - total_deducciones
+        total_liquido = truncar_a_2_decimales(total_liquido)
+
+        # --- LÓGICA DE CÁLCULO (Con Override) ---
+        if monto_manual_override is not None:
+            # Si hay monto manual, usarlo directamente y ignorar cálculos
+            total_a_reintegrar = truncar_a_2_decimales(monto_manual_override)
+            logger.info(f"Usando MONTO MANUAL para comprobante {no_comprobante}: {total_a_reintegrar}")
         else:
-            if config_reintegro['modo'] == 'DIAS':
-                total_a_reintegrar = truncar_a_2_decimales((total_liquido / 15.0) * float(config_reintegro['dias']))
-            else:
-                conceptos_str = str(config_reintegro.get('concepto', '')).strip()
-                if conceptos_str:
-                    conceptos_lista = [c.strip() for c in conceptos_str.split(',') if c.strip()]
-                    total_concepto = 0.0
-                    
-                    for concepto_buscar in conceptos_lista:
-                        s = percepciones_df['COD_CONCEPTO'].astype(str).str.strip()
-                        concepto_df = percepciones_df[s == concepto_buscar]
-                        if concepto_df.empty:
-                            concepto_df = percepciones_df[s.str.lstrip('0') == concepto_buscar.lstrip('0')]
-                        if not concepto_df.empty:
-                            total_concepto += concepto_df['IMPORTE'].astype(float).sum()
-                    
-                    total_a_reintegrar = truncar_a_2_decimales(
-                        (total_concepto / 15.0) * float(config_reintegro['dias']) if config_reintegro.get('por_dias') else total_concepto
-                    )
-        
+            # Lógica normal automática
+            total_a_reintegrar = 0.0
+            if config_reintegro['tipo'] == 'TOTAL':
+                total_a_reintegrar = total_liquido
+            else: # PARCIAL
+                if config_reintegro['modo'] == 'DIAS':
+                    total_a_reintegrar = truncar_a_2_decimales((total_liquido / 15.0) * float(config_reintegro['dias']))
+                else: # Por concepto
+                    conceptos_str = str(config_reintegro.get('concepto', '')).strip()
+                    if conceptos_str:
+                        conceptos_lista = [c.strip() for c in conceptos_str.split(',') if c.strip()]
+                        total_concepto = 0.0
+                        
+                        for concepto_buscar in conceptos_lista:
+                            s = percepciones_df['COD_CONCEPTO'].astype(str).str.strip()
+                            concepto_df = percepciones_df[s == concepto_buscar]
+                            if concepto_df.empty:
+                                concepto_df = percepciones_df[s.str.lstrip('0') == concepto_buscar.lstrip('0')]
+                            if not concepto_df.empty:
+                                total_concepto += concepto_df['IMPORTE'].astype(float).sum()
+                        
+                        if config_reintegro.get('por_dias'):
+                            total_a_reintegrar = truncar_a_2_decimales((total_concepto / 15.0) * float(config_reintegro['dias']))
+                        else:
+                            total_a_reintegrar = truncar_a_2_decimales(total_concepto)
+
         contexto_datos = {
-            "nombre_completo": nombre_completo, "rfc": rfc, "no_comprobante": no_comprobante,
-            "clave_cobro": fila_v.get('CLAVE_PLAZA', ''), "cct": fila_v.get('CCT', ''),
+            "nombre_completo": nombre_completo,
+            "rfc": rfc,
+            "no_comprobante": no_comprobante,
+            "clave_cobro": fila_v.get('CLAVE_PLAZA', ''),
+            "cct": fila_v.get('CCT', ''),
             "campo_abajo_motivo": datos_manuales_input.get("CAMPO_ABAJO_MOTIVO", ""),
-            "desde": fila_v.get('FECHA_INICIO', ''), "hasta": fila_v.get('FECHA_TERMINO', ''),
-            "qna": qna, "fecha_hoy": fecha_hoy_str,
+            "desde": fila_v.get('FECHA_INICIO', ''),
+            "hasta": fila_v.get('FECHA_TERMINO', ''),
+            "qna": qna,
+            "fecha_hoy": fecha_hoy_str,
             "percepciones": percepciones_df.to_dict('records'),
             "deducciones": deducciones_df.to_dict('records'),
             "total_percepciones": float(truncar_a_2_decimales(total_percepciones)),
@@ -434,24 +434,30 @@ def generar_reintegros_pdf(
             "motivo_reintegro": config_reintegro['tipo'],
             "nivel_educativo": datos_manuales_input.get("NIVEL_EDUCATIVO", "")
         }
+
         html_final_renderizado = template.render(contexto_datos)
+
         nombre_archivo_temporal = f"{rfc}_{no_comprobante}_temp.pdf"
-        ruta_temporal = Path(ruta_carpeta_salida) / nombre_archivo_temporal
+        ruta_temporal = os.path.join(ruta_carpeta_salida, nombre_archivo_temporal)
+        
         exito_pdf, mensaje_pdf = convertir_html_a_pdf(html_final_renderizado, ruta_temporal)
         if not exito_pdf:
             return False, mensaje_pdf
+
         nombre_archivo_final = f"{rfc}_{no_comprobante}.pdf"
-        ruta_final = Path(ruta_carpeta_salida) / nombre_archivo_final
+        ruta_final = os.path.join(ruta_carpeta_salida, nombre_archivo_final)
+        
         exito_superponer, mensaje_superponer = superponer_pdfs(ruta_temporal, pdf_fondo, ruta_final)
-        try: os.remove(ruta_temporal)
-        except OSError: pass
+        
+        try:
+            os.remove(ruta_temporal)
+        except OSError:
+            pass
+            
         if not exito_superponer:
             return False, mensaje_superponer
+        
         mensajes_exito.append(f"Éxito: {nombre_archivo_final}")
-
-        # Reportar progreso
-        if progress_callback:
-            progress_callback(idx, total_oficios)
 
     return True, "\n".join(mensajes_exito)
 

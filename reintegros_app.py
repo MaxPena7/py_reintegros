@@ -6,7 +6,9 @@ import json
 from pathlib import Path
 import traceback
 from datetime import datetime
+import sys
 
+# Importar el motor
 try:
     import py_reintegros_pdf as motor
 except ImportError:
@@ -18,11 +20,7 @@ except ImportError:
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
 
-import sys
-import os
-
 def resource_path(relative_path):
-    """Obtiene la ruta absoluta al recurso, funciona para desarrollo y para PyInstaller"""
     try:
         base_path = sys._MEIPASS
     except Exception:
@@ -36,15 +34,11 @@ class App(ctk.CTk):
         self.title("Subjefatura de Nóminas - Generador de Reintegros PDF")
         self.geometry("700x1000")
         self.grid_columnconfigure(0, weight=1)
+        
         try:
             self.iconbitmap(resource_path("reintegro_icono.ico"))
-        except Exception as e:
-            print(f"Error cargando icono: {e}")
-            # Si falla, intentar sin icono pero continuar
-            try:
-                self.iconbitmap("reintegro_icono.ico")
-            except:
-                pass
+        except:
+            pass
 
         # Frame scrolleable principal
         self.main_scrollable = ctk.CTkScrollableFrame(self)
@@ -52,26 +46,22 @@ class App(ctk.CTk):
         self.main_scrollable.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        # Cambiar icono de la ventana e icono de barra de tareas
-        try:
-            self.iconbitmap("reintegro_icono.ico")
-        except:
-            pass
-
+        # --- Variables ---
         self.ruta_anexo_v = ctk.StringVar()
         self.ruta_anexo_vi = ctk.StringVar()
         self.ruta_carpeta_salida = ctk.StringVar()
         self.tipo_reintegro_var = ctk.StringVar(value="TOTAL")
         self.modo_parcial_var = ctk.StringVar(value="DIAS")
         self.modo_concepto_var = ctk.StringVar(value="TOTAL")
-        self.plazas_disponibles = []
         self.plazas_seleccionadas = {}
         self.rutas_anexo_v_lista = []
         self.rutas_anexo_vi_lista = []
         self.cargando = False
         self.spinner_frame = None
+        
+        # Variable para el checkbox manual
+        self.check_manual_var = ctk.BooleanVar(value=False)
 
-        # --- CARGAR CONFIGURACIÓN GUARDADA ---
         self.cargar_configuracion_guardada()
 
         # --- 1. SELECCIÓN DE ARCHIVOS ---
@@ -95,60 +85,87 @@ class App(ctk.CTk):
         self.frame_datos = ctk.CTkFrame(self.main_scrollable)
         self.frame_datos.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
         self.frame_datos.grid_columnconfigure(1, weight=1)
-        
+
         ctk.CTkLabel(self.frame_datos, text="RFC:", font=ctk.CTkFont(weight="bold")).grid(row=0, column=0, padx=10, pady=10, sticky="e")
         self.entry_rfc = ctk.CTkEntry(self.frame_datos, placeholder_text="Ingrese el RFC a buscar")
         self.entry_rfc.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
-        
-        self.btn_consultar = ctk.CTkButton(self.frame_datos, text="Consultar Plazas", 
-                                           command=self.consultar_plazas, width=100)
+
+        self.btn_consultar = ctk.CTkButton(self.frame_datos, text="Consultar Plazas", command=self.consultar_plazas, width=100)
         self.btn_consultar.grid(row=0, column=2, padx=10, pady=10)
-        
+
         ctk.CTkLabel(self.frame_datos, text="Nivel Educativo:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
         self.entry_nivel = ctk.CTkEntry(self.frame_datos, placeholder_text="Ej: PREESCOLAR")
         self.entry_nivel.grid(row=1, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
-        
+
         ctk.CTkLabel(self.frame_datos, text="Motivo:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+
         self.entry_motivo_2 = ctk.CTkTextbox(self.frame_datos, height=80)
         self.entry_motivo_2.grid(row=2, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
 
-        # --- 3. SELECCIÓN DE PLAZAS ---
-        self.frame_plazas = ctk.CTkFrame(self.main_scrollable)
-        self.frame_plazas.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
-        self.frame_plazas.grid_columnconfigure(0, weight=1)
-        self.frame_plazas.grid_remove()
-        
-        ctk.CTkLabel(self.frame_plazas, text="Seleccionar Plazas:", font=ctk.CTkFont(weight="bold")).grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="w")
-        
-        self.btn_seleccionar_todas = ctk.CTkButton(self.frame_plazas, text="Seleccionar Todas", 
-                                                   command=self.seleccionar_todas_plazas, width=120)
-        self.btn_seleccionar_todas.grid(row=0, column=1, padx=5, pady=10, sticky="e")
-        
-        self.btn_deseleccionar_todas = ctk.CTkButton(self.frame_plazas, text="Deseleccionar Todas", 
-                                                     command=self.deseleccionar_todas_plazas, width=130)
-        self.btn_deseleccionar_todas.grid(row=0, column=2, padx=5, pady=10, sticky="e")
-        
-        self.scrollable_plazas = ctk.CTkScrollableFrame(self.frame_plazas, height=150)
-        self.scrollable_plazas.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
-        self.scrollable_plazas.grid_columnconfigure(0, weight=1)
-        
-        # PREVENIR QUE EL SCROLL INTERIOR MUEVA TODO EL FRAME
-        self.scrollable_plazas.bind("<Enter>", lambda e: self._activar_scroll_plazas(True))
-        self.scrollable_plazas.bind("<Leave>", lambda e: self._activar_scroll_plazas(False))
+        # --- FIX CORRECTO PARA SCROLL ---
+        # Cuando el mouse entra al textbox, desactivamos el scroll de afuera
+        self.entry_motivo_2.bind("<Enter>", lambda e: self._activar_scroll_motivo(True))
+        # Cuando sale, lo reactivamos
+        self.entry_motivo_2.bind("<Leave>", lambda e: self._activar_scroll_motivo(False))
 
+       # --- 3. SELECCIÓN DE PLAZAS ---
+        self.f_plazas = ctk.CTkFrame(self.main_scrollable)
+        self.f_plazas.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+        self.f_plazas.grid_columnconfigure(0, weight=1)
+        self.f_plazas.grid_remove()
+        
+        # Título y Botones
+        f_controles_plazas = ctk.CTkFrame(self.f_plazas, fg_color="transparent")
+        f_controles_plazas.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+        ctk.CTkLabel(f_controles_plazas, text="Seleccionar Plazas:", font=ctk.CTkFont(weight="bold")).pack(side="left")
+        ctk.CTkButton(f_controles_plazas, text="Todas", command=self.seleccionar_todas_plazas, width=60, height=24).pack(side="right", padx=5)
+        ctk.CTkButton(f_controles_plazas, text="Ninguna", command=self.deseleccionar_todas_plazas, width=60, height=24).pack(side="right", padx=5)
+        
+        # --- ENCABEZADOS DE LA TABLA ---
+        self.f_headers = ctk.CTkFrame(self.f_plazas, fg_color="gray80", corner_radius=5, height=30)
+        self.f_headers.grid(row=1, column=0, sticky="ew", padx=5, pady=(5,0))
+        # Configuramos las columnas del encabezado (mismos pesos que usaremos abajo)
+        self.f_headers.grid_columnconfigure(0, weight=0) # Checkbox
+        self.f_headers.grid_columnconfigure(1, weight=2) # RFC
+        self.f_headers.grid_columnconfigure(2, weight=2) # Comprobante
+        self.f_headers.grid_columnconfigure(3, weight=3) # Plaza
+        self.f_headers.grid_columnconfigure(4, weight=2) # CCT
+        self.f_headers.grid_columnconfigure(5, weight=2) # Periodo
 
+        # Etiquetas de los encabezados
+        ctk.CTkLabel(self.f_headers, text="✔", width=30, text_color="black").grid(row=0, column=0, padx=2, pady=2)
+        ctk.CTkLabel(self.f_headers, text="RFC", font=("Arial", 11, "bold"), text_color="black").grid(row=0, column=1, sticky="ew", padx=5)
+        ctk.CTkLabel(self.f_headers, text="NO. COMP", font=("Arial", 11, "bold"), text_color="black").grid(row=0, column=2, sticky="ew", padx=5)
+        ctk.CTkLabel(self.f_headers, text="PLAZA", font=("Arial", 11, "bold"), text_color="black").grid(row=0, column=3, sticky="ew", padx=5)
+        ctk.CTkLabel(self.f_headers, text="CCT", font=("Arial", 11, "bold"), text_color="black").grid(row=0, column=4, sticky="ew", padx=5)
+        ctk.CTkLabel(self.f_headers, text="PERIODO", font=("Arial", 11, "bold"), text_color="black").grid(row=0, column=5, sticky="ew", padx=5)
+        
+        # Área Scrollable (Ahora solo contiene los datos)
+        self.scroll_plazas = ctk.CTkScrollableFrame(self.f_plazas, height=200)
+        self.scroll_plazas.grid(row=2, column=0, sticky="nsew", padx=5, pady=5)
+        self.scroll_plazas.grid_columnconfigure(0, weight=0) # Checkbox
+        self.scroll_plazas.grid_columnconfigure(1, weight=2) # RFC
+        self.scroll_plazas.grid_columnconfigure(2, weight=2) # Comp
+        self.scroll_plazas.grid_columnconfigure(3, weight=3) # Plaza
+        self.scroll_plazas.grid_columnconfigure(4, weight=2) # CCT
+        self.scroll_plazas.grid_columnconfigure(5, weight=2) # Periodo
+        
+        self.scroll_plazas.bind("<Enter>", lambda e: self._activar_scroll_plazas(True))
+        self.scroll_plazas.bind("<Leave>", lambda e: self._activar_scroll_plazas(False))
 
-        # --- 4. LÓGICA DE REINTEGRO ---
+        # --- 4. LÓGICA DE REINTEGRO (Configuración) ---
         self.frame_logica = ctk.CTkFrame(self.main_scrollable)
         self.frame_logica.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
         self.frame_logica.grid_columnconfigure(1, weight=1)
         
+        # Título y RadioButtons Principales
         ctk.CTkLabel(self.frame_logica, text="Tipo de Reintegro:", font=ctk.CTkFont(weight="bold")).grid(row=0, column=0, padx=10, pady=10, sticky="w")
         self.frame_tipo_reintegro = ctk.CTkFrame(self.frame_logica, fg_color="transparent")
         self.frame_tipo_reintegro.grid(row=0, column=1, padx=10, pady=10, sticky="w")
         ctk.CTkRadioButton(self.frame_tipo_reintegro, text="Total", variable=self.tipo_reintegro_var, value="TOTAL", command=self.actualizar_visibilidad).pack(side="left", padx=5)
         ctk.CTkRadioButton(self.frame_tipo_reintegro, text="Parcial", variable=self.tipo_reintegro_var, value="PARCIAL", command=self.actualizar_visibilidad).pack(side="left", padx=5)
         
+        # --- Frame PARCIAL (Opciones dinámicas) ---
         self.frame_parcial = ctk.CTkFrame(self.frame_logica)
         self.frame_parcial.grid(row=1, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
         self.frame_parcial.grid_columnconfigure(1, weight=1)
@@ -181,6 +198,25 @@ class App(ctk.CTk):
         self.entry_concepto_dias = ctk.CTkEntry(self.frame_concepto_dias, width=60, placeholder_text="1-15")
         self.entry_concepto_dias.pack(side="left", padx=5, pady=5)
 
+        # --- SECCIÓN DE MONTO MANUAL ---
+        ctk.CTkFrame(self.frame_logica, height=2, fg_color="gray70").grid(row=2, column=0, columnspan=2, sticky="ew", padx=10, pady=(15,5))
+        
+        self.check_monto_manual = ctk.CTkCheckBox(
+            self.frame_logica, 
+            text="Ingresar Monto Manual (Omitir cálculo automático)", 
+            variable=self.check_manual_var, 
+            command=self.toggle_manual_entry,
+            font=ctk.CTkFont(weight="bold")
+        )
+        self.check_monto_manual.grid(row=3, column=0, columnspan=2, padx=10, pady=5, sticky="w")
+        
+        self.frame_input_manual = ctk.CTkFrame(self.frame_logica, fg_color="transparent")
+        self.frame_input_manual.grid(row=4, column=0, columnspan=2, padx=10, pady=5, sticky="w")
+        
+        ctk.CTkLabel(self.frame_input_manual, text="Importe Total a Reintegrar: $").pack(side="left", padx=(25, 5))
+        self.entry_monto_manual = ctk.CTkEntry(self.frame_input_manual, placeholder_text="0.00", state="disabled", width=120)
+        self.entry_monto_manual.pack(side="left", padx=5)
+
         # --- 5. ACCIONES Y ESTADO ---
         self.frame_acciones = ctk.CTkFrame(self.main_scrollable)
         self.frame_acciones.grid(row=4, column=0, padx=10, pady=10, sticky="ew")
@@ -191,240 +227,33 @@ class App(ctk.CTk):
                                          command=self.iniciar_generacion)
         self.btn_generar.grid(row=0, column=0, padx=10, pady=10, sticky="ew", ipady=10)
         
-        self.progress_bar = ctk.CTkProgressBar(self.main_scrollable, mode="determinate")
+        # --- BARRA DE PROGRESO ---
+        self.progress_bar = ctk.CTkProgressBar(self.main_scrollable, mode="indeterminate")
         self.progress_bar.grid(row=5, column=0, padx=20, pady=5, sticky="ew")
-        self.progress_bar.set(0)
-        self.progress_bar.grid_remove()
+        self.progress_bar.grid_remove() # Oculta al inicio
         
         self.lbl_status = ctk.CTkLabel(
             self.main_scrollable, 
             text="Listo. Atajos: Enter=Consultar | Ctrl+G=Generar | Ctrl+Q=Salir | Esc=Limpiar", 
-            height=40, 
-            text_color="gray", 
-            wraplength=680,
+            height=40, text_color="gray", wraplength=680,
             font=ctk.CTkFont(size=11)
         )
         self.lbl_status.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
         self.actualizar_visibilidad()
-        
-        # --- CONFIGURAR ATAJOS DE TECLADO ---
         self.configurar_atajos_teclado()
 
-    def configurar_atajos_teclado(self):
-        """Configura los atajos de teclado para la aplicación"""
-        # Enter para consultar plazas
-        self.entry_rfc.bind('<Return>', lambda event: self.consultar_plazas())
-        
-        # Ctrl+G para generar reintegros
-        self.bind('<Control-g>', lambda event: self.iniciar_generacion())
-        self.bind('<Control-G>', lambda event: self.iniciar_generacion())  # Mayúsculas también
-        
-        # Ctrl+Q para salir
-        self.bind('<Control-q>', lambda event: self.quit())
-        self.bind('<Control-Q>', lambda event: self.quit())
-        
-        # Escape para limpiar o cerrar
-        self.bind('<Escape>', lambda event: self.limpiar_interface())
-
-    def limpiar_interface(self):
-        """Limpia la interfaz al presionar Escape"""
-        # Solo limpia si no hay procesos en curso
-        if not self.cargando and self.btn_generar.cget('state') == 'normal':
-            self.entry_rfc.delete(0, 'end')
-            self.entry_nivel.delete(0, 'end')
-            self.entry_motivo_2.delete('1.0', 'end')
-            self.entry_parcial_dias.delete(0, 'end')
-            self.entry_parcial_concepto.delete(0, 'end')
-            self.entry_concepto_dias.delete(0, 'end')
-            self.frame_plazas.grid_remove()
-            self.actualizar_status("Interfaz limpiada. Listo para nueva consulta.", "gray")
-
-    def cargar_configuracion_guardada(self):
-        """Carga la configuración guardada en config.json"""
-        try:
-            config_path = Path("config.json")
-            if config_path.exists():
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    config = json.load(f)
-                
-                # Cargar rutas de Anexo V
-                if 'ultima_ruta_anexo_v' in config:
-                    rutas_v = config['ultima_ruta_anexo_v']
-                    if isinstance(rutas_v, list) and rutas_v:
-                        self.rutas_anexo_v_lista = rutas_v
-                        if len(rutas_v) == 1:
-                            self.ruta_anexo_v.set(rutas_v[0])
-                        else:
-                            self.ruta_anexo_v.set(f"{len(rutas_v)} archivo(s) seleccionado(s)")
-                
-                # Cargar rutas de Anexo VI
-                if 'ultima_ruta_anexo_vi' in config:
-                    rutas_vi = config['ultima_ruta_anexo_vi']
-                    if isinstance(rutas_vi, list) and rutas_vi:
-                        self.rutas_anexo_vi_lista = rutas_vi
-                        if len(rutas_vi) == 1:
-                            self.ruta_anexo_vi.set(rutas_vi[0])
-                        else:
-                            self.ruta_anexo_vi.set(f"{len(rutas_vi)} archivo(s) seleccionado(s)")
-                
-                # Cargar carpeta de salida
-                if 'ultima_carpeta_salida' in config and config['ultima_carpeta_salida']:
-                    self.ruta_carpeta_salida.set(config['ultima_carpeta_salida'])
-                    
-                print("Configuración cargada exitosamente desde config.json")
-                
-        except Exception as e:
-            print(f"Error al cargar configuración: {e}")
-            # No mostramos error al usuario para no interrumpir la experiencia
-
-    def actualizar_configuracion_rutas(self):
-        """Actualiza el archivo config.json con las rutas actuales"""
-        try:
-            config = motor.cargar_config()
-            
-            # Actualizar con las rutas actuales de la GUI
-            config['ultima_ruta_anexo_v'] = self.rutas_anexo_v_lista
-            config['ultima_ruta_anexo_vi'] = self.rutas_anexo_vi_lista
-            config['ultima_carpeta_salida'] = self.ruta_carpeta_salida.get()
-            
-            motor.guardar_config(config)
-            print("Configuración de rutas actualizada")
-            
-        except Exception as e:
-            print(f"Error al actualizar configuración: {e}")
-
-    def seleccionar_anexo_v(self):
-        rutas = filedialog.askopenfilenames(title="Seleccionar Anexo V (puedes seleccionar múltiples)", filetypes=[("Excel", "*.xlsx")])
-        if rutas:
-            self.rutas_anexo_v_lista = list(rutas)
-            if len(rutas) == 1:
-                self.ruta_anexo_v.set(rutas[0])
-            else:
-                self.ruta_anexo_v.set(f"{len(rutas)} archivo(s) seleccionado(s)")
-            
-            # Actualizar configuración inmediatamente después de seleccionar
-            self.actualizar_configuracion_rutas()
-
-    def seleccionar_anexo_vi(self):
-        rutas = filedialog.askopenfilenames(title="Seleccionar Anexo VI (puedes seleccionar múltiples)", filetypes=[("Excel", "*.xlsx")])
-        if rutas:
-            self.rutas_anexo_vi_lista = list(rutas)
-            if len(rutas) == 1:
-                self.ruta_anexo_vi.set(rutas[0])
-            else:
-                self.ruta_anexo_vi.set(f"{len(rutas)} archivo(s) seleccionado(s)")
-            
-            # Actualizar configuración inmediatamente después de seleccionar
-            self.actualizar_configuracion_rutas()
-
-    def seleccionar_salida(self):
-        ruta = filedialog.askdirectory(title="Seleccionar Carpeta de Salida")
-        if ruta: 
-            self.ruta_carpeta_salida.set(ruta)
-            # Actualizar configuración inmediatamente después de seleccionar
-            self.actualizar_configuracion_rutas()
-            
-    def _activar_scroll_plazas(self, activar):
-        """Activa o desactiva el scroll interno de plazas."""
-        if activar:
-            # Cuando el mouse entra en el área de plazas → solo mover el scroll interno
-            self.scrollable_plazas.bind_all("<MouseWheel>", self._scroll_plazas)
+    # --- FUNCIONES UI MANUAL ---
+    def toggle_manual_entry(self):
+        """Habilita/Deshabilita el campo manual y las opciones de cálculo"""
+        if self.check_manual_var.get():
+            self.entry_monto_manual.configure(state="normal")
+            self.entry_monto_manual.focus()
         else:
-            # Cuando el mouse sale → devolver el control del scroll al principal
-            self.scrollable_plazas.unbind_all("<MouseWheel>")
-            self.main_scrollable.bind_all("<MouseWheel>", self._scroll_principal)
+            self.entry_monto_manual.configure(state="disabled")
+            self.entry_monto_manual.delete(0, 'end')
 
-    def _scroll_principal(self, event):
-        """Restaura el scroll del frame principal cuando el mouse no está en las plazas."""
-        try:
-            self.main_scrollable._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
-        except Exception:
-            pass
-
-    def _scroll_plazas(self, event):
-        """Controla el desplazamiento interno del frame de plazas."""
-        try:
-            # Ajuste de velocidad (el *3* hace que sea más rápido)
-            self.scrollable_plazas._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
-            return "break"
-        except Exception:
-            pass
-
-
-    def consultar_plazas(self):
-        rfc = self.entry_rfc.get().strip()
-        
-        if not rfc:
-            messagebox.showerror("Error", "Ingrese un RFC para consultar.")
-            return
-        
-        if not self.rutas_anexo_v_lista:
-            messagebox.showerror("Error", "Seleccione el Anexo V primero.")
-            return
-        
-        self.cargando = True
-        self.mostrar_spinner()
-        self.btn_consultar.configure(state="disabled")
-        threading.Thread(target=self._consultar_plazas_thread, args=(rfc, self.rutas_anexo_v_lista), daemon=True).start()
-
-    def _consultar_plazas_thread(self, rfc, anexo_v):
-        try:
-            exito, mensaje, plazas = motor.obtener_plazas_por_rfc(rfc, anexo_v)
-            
-            def _update():
-                self.ocultar_spinner()
-                self.btn_consultar.configure(state="normal")
-                if exito:
-                    self.plazas_disponibles = plazas
-                    self.mostrar_plazas(plazas)
-                    messagebox.showinfo("Éxito", f"Se encontraron {len(plazas)} plaza(s).")
-                else:
-                    messagebox.showerror("Error", mensaje)
-                    self.frame_plazas.grid_remove()
-            
-            self.after(0, _update)
-            
-        except Exception as e:
-            # Manejo de errores inesperados
-            error_msg = f"Error inesperado al consultar plazas:\n{str(e)}"
-            print(f"ERROR: {error_msg}")
-            
-            def _update_error():
-                self.ocultar_spinner()
-                self.btn_consultar.configure(state="normal")
-                messagebox.showerror(
-                    "Error Crítico", 
-                    f"No se pudo leer el archivo Excel. Posibles causas:\n\n"
-                    f"• El archivo está dañado o corrupto\n"
-                    f"• El archivo está abierto en otro programa\n"
-                    f"• El formato del archivo no es compatible\n\n"
-                    f"Error técnico: {str(e)}"
-                )
-                self.frame_plazas.grid_remove()
-            
-            self.after(0, _update_error)
-
-    def mostrar_plazas(self, plazas):
-        for widget in self.scrollable_plazas.winfo_children():
-            widget.destroy()
-        
-        self.plazas_seleccionadas = {}
-        
-        for plaza in plazas:
-            var = ctk.BooleanVar(value=False)
-            self.plazas_seleccionadas[plaza['NO_COMPROBANTE']] = var
-            
-            texto_plaza = f"RFC: {plaza['RFC']} | Comprobante: {plaza['NO_COMPROBANTE']} | Clave: {plaza['CLAVE_PLAZA']} | Período: {plaza['PERIODO']}"
-            
-            frame_plaza = ctk.CTkFrame(self.scrollable_plazas, fg_color="transparent")
-            frame_plaza.pack(fill="x", padx=10, pady=5)
-            
-            checkbox = ctk.CTkCheckBox(frame_plaza, text=texto_plaza, variable=var)
-            checkbox.pack(side="left", fill="x", expand=True)
-        
-        self.frame_plazas.grid()
-
+    # --- FUNCIONES DE SELECCIÓN DE PLAZAS ---
     def seleccionar_todas_plazas(self):
         for var in self.plazas_seleccionadas.values():
             var.set(True)
@@ -433,7 +262,153 @@ class App(ctk.CTk):
         for var in self.plazas_seleccionadas.values():
             var.set(False)
 
+    def _activar_scroll_plazas(self, active):
+        if active:
+            self.scroll_plazas.bind_all("<MouseWheel>", self._scroll_plazas)
+        else:
+            self.scroll_plazas.unbind_all("<MouseWheel>")
+            self.main_scrollable.bind_all("<MouseWheel>", self._scroll_principal)
+            
+    def _activar_scroll_motivo(self, active):
+        """Controla el scroll cuando el mouse está sobre el motivo"""
+        if active:
+            # Si el mouse está sobre el motivo, quitamos el control a la ventana principal
+            # El textbox se scrolleará solo por defecto al no tener competencia
+            self.main_scrollable.unbind_all("<MouseWheel>")
+        else:
+            # Si el mouse sale, le devolvemos el control a la ventana principal
+            self.main_scrollable.bind_all("<MouseWheel>", self._scroll_principal)
+
+    def _scroll_principal(self, event):
+        try:
+            self.main_scrollable._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
+        except Exception: pass
+
+    def _scroll_plazas(self, event):
+        try:
+            self.scroll_plazas._parent_canvas.yview_scroll(int(-1 * (event.delta / 10)), "units")
+            return "break"
+        except Exception: pass
+
+    # --- FUNCIONES DE ARCHIVOS ---
+    def seleccionar_anexo_v(self):
+        rutas = filedialog.askopenfilenames(title="Seleccionar Anexo V", filetypes=[("Excel", "*.xlsx")])
+        if rutas:
+            self.rutas_anexo_v_lista = list(rutas)
+            self.ruta_anexo_v.set(rutas[0] if len(rutas)==1 else f"{len(rutas)} archivos")
+            self.actualizar_configuracion_rutas()
+
+    def seleccionar_anexo_vi(self):
+        rutas = filedialog.askopenfilenames(title="Seleccionar Anexo VI", filetypes=[("Excel", "*.xlsx")])
+        if rutas:
+            self.rutas_anexo_vi_lista = list(rutas)
+            self.ruta_anexo_vi.set(rutas[0] if len(rutas)==1 else f"{len(rutas)} archivos")
+            self.actualizar_configuracion_rutas()
+
+    def seleccionar_salida(self):
+        ruta = filedialog.askdirectory(title="Seleccionar Carpeta de Salida")
+        if ruta: 
+            self.ruta_carpeta_salida.set(ruta)
+            self.actualizar_configuracion_rutas()
+
+    def actualizar_configuracion_rutas(self):
+        try:
+            cfg = motor.cargar_config()
+            cfg.update({
+                'ultima_ruta_anexo_v': self.rutas_anexo_v_lista,
+                'ultima_ruta_anexo_vi': self.rutas_anexo_vi_lista,
+                'ultima_carpeta_salida': self.ruta_carpeta_salida.get()
+            })
+            motor.guardar_config(cfg)
+        except: pass
+
+    def cargar_configuracion_guardada(self):
+        try:
+            cfg = motor.cargar_config()
+            if 'ultima_ruta_anexo_v' in cfg:
+                v = cfg['ultima_ruta_anexo_v']
+                self.rutas_anexo_v_lista = v if isinstance(v, list) else [v]
+                if self.rutas_anexo_v_lista: self.ruta_anexo_v.set(self.rutas_anexo_v_lista[0] if len(self.rutas_anexo_v_lista)==1 else f"{len(self.rutas_anexo_v_lista)} archivos")
+            if 'ultima_ruta_anexo_vi' in cfg:
+                vi = cfg['ultima_ruta_anexo_vi']
+                self.rutas_anexo_vi_lista = vi if isinstance(vi, list) else [vi]
+                if self.rutas_anexo_vi_lista: self.ruta_anexo_vi.set(self.rutas_anexo_vi_lista[0] if len(self.rutas_anexo_vi_lista)==1 else f"{len(self.rutas_anexo_vi_lista)} archivos")
+            if 'ultima_carpeta_salida' in cfg: 
+                self.ruta_carpeta_salida.set(cfg['ultima_carpeta_salida'])
+        except: pass
+
+    # --- FUNCIONES DE UI GENERAL ---
+    def configurar_atajos_teclado(self):
+        self.entry_rfc.bind('<Return>', lambda e: self.consultar_plazas())
+        self.bind('<Control-g>', lambda e: self.iniciar_generacion())
+        self.bind('<Control-G>', lambda e: self.iniciar_generacion())
+        self.bind('<Escape>', lambda e: self.limpiar_interface())
+
+    def limpiar_interface(self):
+        if not self.cargando and self.btn_generar.cget('state') == 'normal':
+            self.entry_rfc.delete(0, 'end')
+            self.entry_nivel.delete(0, 'end')
+            self.entry_motivo_2.delete('1.0', 'end')
+            self.check_manual_var.set(False)
+            self.toggle_manual_entry()
+            self.frame_plazas.grid_remove()
+            self.actualizar_status("Interfaz limpiada.", "gray")
+
+    def consultar_plazas(self):
+        rfc = self.entry_rfc.get().strip()
+        if not rfc or not self.rutas_anexo_v_lista:
+            return messagebox.showerror("Error", "Faltan datos (RFC o Anexo V)")
+        self.cargando = True
+        self.show_spinner()
+        self.btn_consultar.configure(state="disabled")
+        threading.Thread(target=self._th_consulta, args=(rfc,), daemon=True).start()
+
+    def _th_consulta(self, rfc):
+        ok, msg, plazas = motor.obtener_plazas_por_rfc(rfc, self.rutas_anexo_v_lista)
+        self.after(0, lambda: self._post_consulta(ok, msg, plazas))
+
+    def _post_consulta(self, ok, msg, plazas):
+        self.hide_spinner()
+        self.btn_consultar.configure(state="normal")
+        
+        if not ok: 
+            return messagebox.showerror("Error", msg)
+            
+        # Limpiar lista anterior
+        for w in self.scroll_plazas.winfo_children(): 
+            w.destroy()
+            
+        self.plazas_seleccionadas = {}
+        
+        # Dibujar filas
+        for idx, p in enumerate(plazas):
+            var = ctk.BooleanVar(value=False)
+            self.plazas_seleccionadas[p['NO_COMPROBANTE']] = var
+            
+            # 1. Checkbox (CORREGIDO: Se eliminó sticky="c")
+            c = ctk.CTkCheckBox(self.scroll_plazas, text="", variable=var, width=24)
+            c.grid(row=idx, column=0, padx=2, pady=2) 
+            
+            # 2. RFC
+            ctk.CTkLabel(self.scroll_plazas, text=p['RFC'], anchor="w").grid(row=idx, column=1, padx=5, pady=2, sticky="ew")
+            
+            # 3. Comprobante
+            ctk.CTkLabel(self.scroll_plazas, text=p['NO_COMPROBANTE'], anchor="w").grid(row=idx, column=2, padx=5, pady=2, sticky="ew")
+            
+            # 4. Plaza
+            ctk.CTkLabel(self.scroll_plazas, text=p['CLAVE_PLAZA'], anchor="w").grid(row=idx, column=3, padx=5, pady=2, sticky="ew")
+            
+            # 5. CCT
+            ctk.CTkLabel(self.scroll_plazas, text=p.get('CCT', 'S/D'), anchor="w").grid(row=idx, column=4, padx=5, pady=2, sticky="ew")
+
+            #6. Periodo
+            ctk.CTkLabel(self.scroll_plazas, text=p['PERIODO'], anchor="w").grid(row=idx, column=5, padx=5, pady=2, sticky="ew")
+       
+        self.f_plazas.grid()
+        messagebox.showinfo("Éxito", f"{len(plazas)} plazas encontradas")
+
     def actualizar_visibilidad(self):
+        self.toggle_manual_entry() # <--- Asegurarse que esto se llame al actualizar
         if self.tipo_reintegro_var.get() == "PARCIAL":
             self.frame_parcial.grid()
             if self.modo_parcial_var.get() == "DIAS":
@@ -443,211 +418,116 @@ class App(ctk.CTk):
                 self.frame_parcial_dias.grid_remove()
                 self.frame_parcial_concepto.grid(row=2, column=0, columnspan=2, sticky="ew")
                 if self.modo_concepto_var.get() == "DIAS":
-                    self.frame_concepto_dias.pack(side="left", padx=10, pady=5)
+                    self.frame_concepto_dias.pack(side="left", padx=10)
                 else:
                     self.frame_concepto_dias.pack_forget()
         else:
             self.frame_parcial.grid_remove()
 
     def iniciar_generacion(self):
-        plazas_marcadas = [comprobante for comprobante, var in self.plazas_seleccionadas.items() if var.get()]
-        
-        if not plazas_marcadas:
-            messagebox.showerror("Error", "Debe seleccionar al menos una plaza para reintegrar.")
-            return
-        
-        self.btn_generar.configure(text="Procesando...", state="disabled")
-        self.lbl_status.configure(text="Iniciando...", text_color="gray")
-        self.progress_bar.set(0)
+        sel = [k for k,v in self.plazas_seleccionadas.items() if v.get()]
+        if not sel: return messagebox.showerror("Error", "Seleccione al menos una plaza")
+        self.btn_generar.configure(state="disabled", text="Procesando...")
+        # --- BARRA DE PROGRESO ACTIVADA ---
         self.progress_bar.grid()
-        
-        threading.Thread(target=self.generar_reintegro, args=(plazas_marcadas,), daemon=True).start()
+        self.progress_bar.start()
+        threading.Thread(target=self.generar_reintegro, args=(sel,), daemon=True).start()
 
     def generar_reintegro(self, plazas_marcadas):
         rfc = self.entry_rfc.get()
         salida = self.ruta_carpeta_salida.get()
-
-        if not rfc or not self.rutas_anexo_v_lista or not self.rutas_anexo_vi_lista or not salida:
-            self.actualizar_status("Error: Todos los campos son obligatorios.", "red")
+        if not all([rfc, self.rutas_anexo_v_lista, self.rutas_anexo_vi_lista, salida]):
+            self.actualizar_status("Faltan campos obligatorios", "red")
             return
 
-        datos_manuales = {
+        # Lectura Monto Manual
+        monto_manual = None
+        if self.check_manual_var.get():
+            try:
+                monto_manual = float(self.entry_monto_manual.get())
+                if monto_manual <= 0: raise ValueError
+            except:
+                self.actualizar_status("Error: Monto manual inválido", "red")
+                return
+
+        # Configuración Automática
+        conf = {'tipo': self.tipo_reintegro_var.get()}
+        if conf['tipo'] == 'TOTAL':
+            conf.update({'modo': None, 'dias': 15, 'concepto': None, 'por_dias': False})
+        else:
+            modo = self.modo_parcial_var.get()
+            conf['modo'] = modo
+            if modo == 'DIAS':
+                try: d = int(self.entry_parcial_dias.get())
+                except: d = 0
+                conf.update({'dias': d, 'concepto': None, 'por_dias': False})
+            else:
+                c = self.entry_parcial_concepto.get()
+                if not c and not monto_manual:
+                    self.actualizar_status("Error: Falta concepto", "red")
+                    return
+                try: d = int(self.entry_concepto_dias.get())
+                except: d = 15
+                conf.update({'concepto': c, 'dias': d, 'por_dias': self.modo_concepto_var.get()=='DIAS'})
+
+        datos = {
             "NIVEL_EDUCATIVO": self.entry_nivel.get(),
             "CAMPO_ABAJO_MOTIVO": self.entry_motivo_2.get("1.0", "end-1c")
         }
 
-        config_reintegro = {}
-        tipo = self.tipo_reintegro_var.get()
-        config_reintegro['tipo'] = tipo
-        if tipo == 'TOTAL':
-            config_reintegro.update({'modo': None, 'dias': 15, 'concepto': None, 'por_dias': False})
-        else:
-            modo_parcial = self.modo_parcial_var.get()
-            config_reintegro['modo'] = modo_parcial
-            if modo_parcial == 'DIAS':
-                try:
-                    dias = int(self.entry_parcial_dias.get())
-                    if not (1 <= dias <= 15): raise ValueError
-                except ValueError:
-                    self.actualizar_status("Error: 'Días a reintegrar' debe ser un número entre 1 y 15.", "red")
-                    return
-                config_reintegro.update({'dias': dias, 'concepto': None, 'por_dias': False})
-            else:
-                conceptos = self.entry_parcial_concepto.get()
-                if not conceptos:
-                    self.actualizar_status("Error: Debe ingresar al menos un código de Concepto.", "red")
-                    return
-                modo_concepto = self.modo_concepto_var.get()
-                if modo_concepto == 'DIAS':
-                    try:
-                        dias = int(self.entry_concepto_dias.get())
-                        if not (1 <= dias <= 15): raise ValueError
-                    except ValueError:
-                        self.actualizar_status("Error: 'Días (Concepto)' debe ser un número entre 1 y 15.", "red")
-                        return
-                    config_reintegro.update({'dias': dias, 'concepto': conceptos, 'por_dias': True})
-                else:
-                    config_reintegro.update({'dias': 15, 'concepto': conceptos, 'por_dias': False})
-
-        self.actualizar_status("Cargando Anexos y procesando... esto puede tardar un momento.", "gray")
-        
+        self.actualizar_status("Generando PDFs...", "gray")
         try:
-            exito, mensaje = motor.generar_reintegros_pdf(
-                rfc_input=rfc,
-                config_reintegro=config_reintegro,
-                datos_manuales_input=datos_manuales,
-                ruta_anexo_v=self.rutas_anexo_v_lista,
-                ruta_anexo_vi=self.rutas_anexo_vi_lista,
-                ruta_carpeta_salida=salida,
+            ok, msg = motor.generar_reintegros_pdf(
+                rfc, conf, datos,
+                self.rutas_anexo_v_lista, self.rutas_anexo_vi_lista, salida,
                 no_comprobantes_seleccionados=plazas_marcadas,
-                progress_callback=self.actualizar_progreso
+                monto_manual_override=monto_manual
             )
-            
-            if exito:
-                self.actualizar_status(f"¡Éxito!\n{mensaje}", "green")
-            else:
-                # Verificar si es un error de estructura de archivos
-                if any(keyword in mensaje for keyword in ["Estructura de archivos", "Columnas faltantes", "estructura"]):
-                    self.actualizar_status("Error en estructura de archivos Excel", "red")
-                    messagebox.showerror(
-                        "Error de Estructura de Archivos",
-                        f"{mensaje}\n\n"
-                        f"Por favor, verifique que:\n"
-                        f"• Los archivos sean los Anexos V y VI correctos\n"
-                        f"• Los encabezados de columna no hayan cambiado\n"
-                        f"• Los archivos no estén corruptos\n\n"
-                        f"Se ha guardado un log detallado para diagnóstico."
-                    )
-                else:
-                    self.actualizar_status(f"Error:\n{mensaje}", "red")
-                    # Mostrar mensaje de error general si no es de estructura
-                    if "Error" in mensaje or "error" in mensaje.lower():
-                        messagebox.showerror("Error", mensaje)
-
+            self.after(0, lambda: self.end_gen(ok, msg))
         except Exception as e:
-            # Log detallado del error
-            error_traceback = traceback.format_exc()
-            error_msg = f"Error inesperado al generar reintegros:\n{str(e)}"
-            
-            # Guardar en archivo de log
-            self.guardar_log_error(error_traceback, rfc, plazas_marcadas)
-            
-            # Mostrar al usuario
-            self.actualizar_status("Error crítico. Se ha guardado un log para diagnóstico.", "red")
-            messagebox.showerror(
-                "Error Crítico", 
-                f"Ocurrió un error inesperado durante la generación.\n\n"
-                f"Detalles:\n{str(e)}\n\n"
-                f"Se ha guardado un archivo 'error_log.txt' con detalles técnicos.\n"
-                f"Por favor, contacte al administrador del sistema."
-            )
+            self.after(0, lambda: self.end_gen(False, str(e)))
 
-    def guardar_log_error(self, error_traceback, rfc, plazas_marcadas):
-        """Guarda el error detallado en un archivo de log"""
-        try:
-            log_filename = "error_log.txt"
-            with open(log_filename, "a", encoding="utf-8") as log_file:
-                log_file.write("=" * 80 + "\n")
-                log_file.write(f"ERROR - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                log_file.write("=" * 80 + "\n")
-                log_file.write(f"RFC: {rfc}\n")
-                log_file.write(f"Plazas seleccionadas: {plazas_marcadas}\n")
-                log_file.write(f"Anexo V: {self.rutas_anexo_v_lista}\n")
-                log_file.write(f"Anexo VI: {self.rutas_anexo_vi_lista}\n")
-                log_file.write(f"Carpeta salida: {self.ruta_carpeta_salida.get()}\n")
-                log_file.write(f"Tipo reintegro: {self.tipo_reintegro_var.get()}\n")
-                log_file.write("\nTRACEBACK COMPLETO:\n")
-                log_file.write(error_traceback)
-                log_file.write("\n" + "=" * 80 + "\n\n")
-            
-            print(f"Error guardado en: {log_filename}")
-            
-        except Exception as log_error:
-            print(f"No se pudo guardar el log: {log_error}")    
-
-    def actualizar_progreso(self, actual, total):
-        def _update():
-            progreso = actual / total
-            self.progress_bar.set(progreso)
-            self.lbl_status.configure(
-                text=f"Procesando oficio {actual} de {total}... ({int(progreso * 100)}%)",
-                text_color="gray"
-            )
-        self.after(0, _update)
-
-    def actualizar_status(self, mensaje, color):
-        def _update():
-            self.lbl_status.configure(text=mensaje, text_color=color)
-            self.btn_generar.configure(text="Generar Reintegro(s)", state="normal")
-            if color == "red":
-                self.progress_bar.grid_remove()
-                self.progress_bar.set(0)
+    def end_gen(self, ok, msg):
+        # --- BARRA DE PROGRESO DESACTIVADA ---
+        self.progress_bar.stop()
+        self.progress_bar.grid_remove()
         
-        self.after(0, _update)
+        self.btn_generar.configure(state="normal", text="Generar Reintegro(s)")
+        if ok:
+            self.lbl_status.configure(text="¡Éxito!", text_color="green")
+            messagebox.showinfo("Éxito", msg)
+        else:
+            self.lbl_status.configure(text="Error", text_color="red")
+            messagebox.showerror("Error", msg)
 
-    def mostrar_spinner(self):
-        """Muestra un indicador de carga"""
-        if self.spinner_frame is None:
-            self.spinner_frame = ctk.CTkFrame(self.frame_datos, fg_color="transparent")
-            self.spinner_frame.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
-            
-            self.spinner_label = ctk.CTkLabel(
-                self.spinner_frame, 
-                text="⏳ Consultando plazas...",
-                font=ctk.CTkFont(size=12),
-                text_color="gray"
-            )
-            self.spinner_label.pack()
-            
-            self.animar_spinner()
+    def actualizar_status(self, msg, col):
+        def _upd():
+            self.lbl_status.configure(text=msg, text_color=col)
+            self.btn_generar.configure(state="normal", text="Generar Reintegro(s)")
+            if col == "red": # Si hay error, detener barra
+                self.progress_bar.stop()
+                self.progress_bar.grid_remove()
+        self.after(0, _upd)
 
-    def animar_spinner(self):
-        """Anima el indicador de carga"""
-        if self.cargando and self.spinner_label:
-            spinner_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-            self.spinner_index = getattr(self, 'spinner_index', 0)
-            self.spinner_label.configure(text=f"{spinner_chars[self.spinner_index]} Consultando plazas...")
-            self.spinner_index = (self.spinner_index + 1) % len(spinner_chars)
-            self.after(100, self.animar_spinner)
+    def show_spinner(self):
+        self.spinner_frame = ctk.CTkFrame(self.frame_datos, fg_color="transparent")
+        self.spinner_frame.grid(row=3, column=0, columnspan=3)
+        self.spinner_lbl = ctk.CTkLabel(self.spinner_frame, text="⏳ Cargando...", text_color="gray")
+        self.spinner_lbl.pack()
+        self.anim()
 
-    def ocultar_spinner(self):
-        """Oculta el indicador de carga"""
+    def anim(self):
+        if self.cargando and self.spinner_lbl:
+            chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+            self.idx = getattr(self, 'idx', 0)
+            self.spinner_lbl.configure(text=f"{chars[self.idx]} Buscando...")
+            self.idx = (self.idx + 1) % len(chars)
+            self.after(100, self.anim)
+
+    def hide_spinner(self):
         self.cargando = False
-        if self.spinner_frame:
-            self.spinner_frame.destroy()
-            self.spinner_frame = None
-            self.spinner_label = None
-
+        if self.spinner_frame: self.spinner_frame.destroy()
 
 if __name__ == "__main__":
-    if not os.path.exists(motor.PDF_FONDO):
-        messagebox.showerror("Error Crítico", 
-                             f"No se encontró el archivo '{motor.PDF_FONDO}'.\n"
-                             "La aplicación no puede iniciarse sin el PDF de fondo.")
-    elif not os.path.exists(motor.RUTA_WKHTMLTOPDF):
-        messagebox.showerror("Error Crítico", 
-                             f"No se encontró 'wkhtmltopdf.exe' en:\n{motor.RUTA_WKHTMLTOPDF}\n"
-                             "La aplicación no puede generar PDFs sin este programa.")
-    else:
-        app = App()
-        app.mainloop()
+    if not os.path.exists(motor.PDF_FONDO): messagebox.showerror("Falta archivo", "Falta fondo_reintegro.pdf")
+    else: App().mainloop()
