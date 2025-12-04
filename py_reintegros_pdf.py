@@ -152,6 +152,24 @@ def convertir_html_a_pdf(html_string, ruta_pdf_salida):
         logger.error(f"ERROR al crear PDF '{ruta_pdf_salida}': {e}")
         return False, f"Error de pdfkit: {e}"
 
+def formatear_fecha(fecha_str):
+    """Intenta convertir strings de fecha a formato dd/mm/yyyy"""
+    if not fecha_str or str(fecha_str).lower() == 'nan':
+        return ''
+    
+    s = str(fecha_str).strip()
+    # Si contiene espacio (timestamp), cortarlo
+    if " " in s:
+        s = s.split(" ")[0]
+    
+    # Si tiene guiones, asumir yyyy-mm-dd y convertir a dd/mm/yyyy
+    if "-" in s:
+        partes = s.split("-")
+        if len(partes) == 3:
+            return f"{partes[2]}/{partes[1]}/{partes[0]}"
+    
+    return s
+
 def truncar_a_2_decimales(valor):
     return math.trunc(float(valor) * 100) / 100.0
 
@@ -227,7 +245,13 @@ def obtener_plazas_por_rfc(rfc_input, rutas_anexo_v):
                         'CLAVE_PLAZA': fila.get('CLAVE_PLAZA', ''),
                         'CCT': fila.get('CCT', ''),
                         'PERIODO': fila.get('PERIODO', ''),
-                        'nombre_completo': f"{fila.get('PRIMER_APELLIDO', '')} {fila.get('SEGUNDO_APELLIDO', '')} {fila.get('NOMBRE(S)', '')}".strip()
+                        'nombre_completo': " ".join([
+                            str(part).strip() for part in [
+                                fila.get('PRIMER_APELLIDO'), 
+                                fila.get('SEGUNDO_APELLIDO'), 
+                                fila.get('NOMBRE(S)')
+                            ] if part and str(part).strip().lower() != 'nan'
+                        ])
                     }
                     plazas.append(plaza_info)
                 logger.info(f"Encontradas {len(oficios)} plazas para RFC: {rfc_input}")
@@ -369,7 +393,13 @@ def generar_reintegros_pdf(
         rfc = fila_v.get('RFC', 'S/RFC')
         logger.info(f"Procesando: {rfc} - Comprobante: {no_comprobante}")
         
-        nombre_completo = f"{fila_v.get('PRIMER_APELLIDO', '')} {fila_v.get('SEGUNDO_APELLIDO', '')} {fila_v.get('NOMBRE(S)', '')}".strip()
+        nombre_completo = " ".join([
+            str(part).strip() for part in [
+                fila_v.get('PRIMER_APELLIDO'), 
+                fila_v.get('SEGUNDO_APELLIDO'), 
+                fila_v.get('NOMBRE(S)')
+            ] if part and str(part).strip().lower() != 'nan'
+        ])
         qna = fila_v.get('PERIODO', '')
 
         detalles = df_anexo_vi[df_anexo_vi['NO_COMPROBANTE'] == no_comprobante]
@@ -421,8 +451,8 @@ def generar_reintegros_pdf(
             "clave_cobro": fila_v.get('CLAVE_PLAZA', ''),
             "cct": fila_v.get('CCT', ''),
             "campo_abajo_motivo": datos_manuales_input.get("CAMPO_ABAJO_MOTIVO", ""),
-            "desde": fila_v.get('FECHA_INICIO', ''),
-            "hasta": fila_v.get('FECHA_TERMINO', ''),
+            "desde": formatear_fecha(fila_v.get('FECHA_INICIO', '')),
+            "hasta": formatear_fecha(fila_v.get('FECHA_TERMINO', '')),
             "qna": qna,
             "fecha_hoy": fecha_hoy_str,
             "percepciones": percepciones_df.to_dict('records'),
