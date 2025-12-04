@@ -475,7 +475,7 @@ class App(ctk.CTk):
             "CAMPO_ABAJO_MOTIVO": self.entry_motivo_2.get("1.0", "end-1c")
         }
 
-        self.actualizar_status("Generando PDFs...", "gray")
+        self.actualizar_status("Generando PDFs...", "gray", habilitar_boton=False)
         try:
             ok, msg = motor.generar_reintegros_pdf(
                 rfc, conf, datos,
@@ -500,10 +500,11 @@ class App(ctk.CTk):
             self.lbl_status.configure(text="Error", text_color="red")
             messagebox.showerror("Error", msg)
 
-    def actualizar_status(self, msg, col):
+    def actualizar_status(self, msg, col, habilitar_boton=True):
         def _upd():
             self.lbl_status.configure(text=msg, text_color=col)
-            self.btn_generar.configure(state="normal", text="Generar Reintegro(s)")
+            if habilitar_boton:
+                self.btn_generar.configure(state="normal", text="Generar Reintegro(s)")
             if col == "red": # Si hay error, detener barra
                 self.progress_bar.stop()
                 self.progress_bar.grid_remove()
